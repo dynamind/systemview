@@ -132,7 +132,7 @@ function caption(n: RNode) {
   if (n.r > 0.5) return 'reversed'
   if (n.def.byRule) return 'rule · solution by design'
   const s = strategyLabel[n.def.strategy ?? '']
-  return n.def.by ? `${s} · proposed by ${n.def.by}` : s
+  return n.def.by ? `${s} · by ${n.def.by}` : s
 }
 
 const clickable = (id: string) => NODES[id].kind !== 'source' || id === 'capital'
@@ -518,7 +518,7 @@ text {
 .edge.speculates {
   stroke: var(--unknown);
 }
-.edge.proposes {
+.edge.involves {
   stroke: var(--muted);
   stroke-opacity: 0.7;
   stroke-dasharray: calc(var(--px) * 1) calc(var(--px) * 3);

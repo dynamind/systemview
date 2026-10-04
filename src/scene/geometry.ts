@@ -101,7 +101,7 @@ export function layoutEdges(edges: EdgeDef[], rect: (id: string) => Rect | undef
     let p1 = e.viaTo ? ports.get(`${e.viaTo}|from`) : isBox(e.to) ? ports.get(`${e.id}|to`) : pointAnchor(e.to, rb, false)
     if (!p0 || !p1) continue
     // Edges arriving from above stop short of the caption that sits over the box.
-    if (sideOf(e, 'to') === 'top' && (e.kind === 'pressure' || e.kind === 'proposes')) p1 = { x: p1.x, y: p1.y - 19 * rb.s }
+    if (sideOf(e, 'to') === 'top' && isBox(e.to) && (e.kind === 'pressure' || e.kind === 'involves')) p1 = { x: p1.x, y: p1.y - 19 * rb.s }
     // Edges entering from the boundary travel inward: flip the boundary-side tangent.
     const t0 = e.viaFrom ? tangent.right : tangent[sideOf(e, 'from')]
     const t1 = e.viaTo ? tangent.left : tangent[sideOf(e, 'to')]

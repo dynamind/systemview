@@ -19,8 +19,8 @@ const BRANCH_OUTPUTS = {
 }
 
 const BEDS_VIEW = {
-  1: ['services', 'pLame', 'beds', 'rested', 'bUnknown'],
-  2: ['pLame', 'beds', 'rested', 'mastitis', 'bUnknown'],
+  1: ['pLame', 'beds', 'rested', 'bUnknown'],
+  2: ['services', 'pLame', 'beds', 'rested', 'mastitis', 'bUnknown'],
   3: ['pLame', 'beds', 'rested', 'mastitis', 'bUnknown', 'pMastitis', 'cutOpen', 'losses', 'lesson', 'cUnknown'],
 }
 
@@ -112,9 +112,9 @@ export function useStory(scene: Scene) {
         replay
           ? 'The water beds: a solution that turned out to be an experiment. It failed, and the farm still came out knowing more than it did.'
           : state.beds === 1
-            ? 'The vet had an answer for lame cows: heated water beds. Soft, warm, a clear purpose. But every solution is a hypothesis, and this one comes with an output nobody can name yet.'
+            ? 'The farmer had an answer for lame cows: heated water beds. Soft, warm, surely a help. But every solution is a hypothesis, and this one comes with an output nobody can name yet.'
             : state.beds === 2
-              ? 'Then the fog condensed. Warm and wet is exactly where bacteria thrive: udder infections. The question mark gave up one secret, and kept the rest.'
+              ? 'Then the fog condensed. The herd came down with udder infections, and the vet traced them to the beds: warm and wet is exactly where bacteria thrive. The question mark gave up one secret, and kept the rest.'
               : 'The infections became a problem, and the cheapest solution was to undo the first one. The farmer cut the beds open and took the loss. Lame cows are back on the table, but the farm now knows something it didn’t.',
       )
     },
@@ -185,7 +185,7 @@ export function useStory(scene: Scene) {
       )
     },
 
-    why(id: string) {
+    why(id: string, text?: string) {
       const n = NODES[id]
       if (!n) return
       // Asking why an alternative exists brings it forward.
@@ -197,7 +197,7 @@ export function useStory(scene: Scene) {
       if (n.kind === 'part') settle(['farm'], 6, 9)
       else settle(chain.length > 1 ? chain : [id], 40)
       const parent = n.parent ? NODES[n.parent] : undefined
-      say(n.why ?? (parent ? `${n.label}: ${n.relation} ${parent.label.toLowerCase()}.` : n.label))
+      say(text ?? n.why ?? (parent ? `${n.label}: ${n.relation} ${parent.label.toLowerCase()}.` : n.label))
     },
 
     clearFocus() {
@@ -298,7 +298,7 @@ export function useStory(scene: Scene) {
     // Then branches not yet opened.
     if (!state.manure) add('What happens to the manure?', actions.manure)
     if (!state.cap) add('What if methane is capped?', actions.cap)
-    if (!state.beds) add('What did the vet propose?', actions.beds)
+    if (!state.beds) add('What did the farmer try?', actions.beds)
     if (!state.fog) add('What don’t we know yet?', actions.fog)
 
     const chosen =
@@ -338,7 +338,11 @@ export function useStory(scene: Scene) {
       actions.beds,
       actions.beds,
       actions.beds,
-      () => actions.why('digester'),
+      () =>
+        actions.why(
+          'cutOpen',
+          'Follow any box back and you reach the reason it exists. Cutting the beds open answers the infections, which answer the beds, which answer lame cows, which answer the farm’s purpose: a living from milk.',
+        ),
       () => {
         actions.overview()
         say('Each part of this machine can answer one question: what are you here for? And each answer leaves something behind. That residue is the next problem.')

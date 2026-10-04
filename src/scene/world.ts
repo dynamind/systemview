@@ -29,7 +29,7 @@ export interface NodeDef {
   relation?: string
   why?: string
   pattern?: string
-  /** Who proposed this solution: every solution is someone’s hypothesis. */
+  /** Who chose this solution: every solution is someone’s hypothesis. */
   by?: string
   /** A rule designed as a solution, the mirror image of a rule that makes a problem. */
   byRule?: boolean
@@ -41,7 +41,7 @@ export interface EdgeDef {
   id: string
   from: string
   to: string
-  kind: 'flow' | 'becomes' | 'solves' | 'pressure' | 'speculates' | 'proposes'
+  kind: 'flow' | 'becomes' | 'solves' | 'pressure' | 'speculates' | 'involves'
   valence?: Valence
   fromSide?: Side
   toSide?: Side
@@ -241,10 +241,10 @@ const nodes: NodeDef[] = [
     kind: 'solution',
     label: 'Heated water beds',
     strategy: 'eliminate',
-    by: 'the vet',
+    by: 'the farmer',
     parent: 'pLame',
     relation: 'solves',
-    why: 'The vet proposed heated water beds: soft and warm, so cows lie longer and their legs recover. A clear purpose, and an untested one.',
+    why: 'The farmer chose heated water beds, believing they would help: soft and warm, so cows lie longer and their legs recover. A clear purpose, and an untested one.',
   },
   { id: 'rested', kind: 'sink', label: 'Rested cows', valence: 'desired', parent: 'beds', relation: 'output of' },
   {
@@ -255,14 +255,14 @@ const nodes: NodeDef[] = [
     condenses: true,
     parent: 'beds',
     relation: 'output of',
-    why: 'Warm and wet is exactly where bacteria thrive. Nobody named this output at design time; the herd named it.',
+    why: 'Warm and wet is exactly where bacteria thrive. Nobody named this output at design time; the herd showed it, and the vet traced it back to the beds.',
   },
   { id: 'bUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'beds', relation: 'output of' },
   {
     id: 'pMastitis',
     kind: 'problem',
     label: 'Infected udders',
-    note: 'caused by the cure',
+    note: 'traced to the beds by the vet',
     parent: 'mastitis',
     relation: 'arises from',
     why: 'An output nobody could name became one nobody could ignore.',
@@ -388,7 +388,7 @@ export const EDGES: EdgeDef[] = [
   f('oFUnknown', 'fewer', 'fUnknown', 'unknown'),
 
   // Water beds
-  { id: 'propBeds', from: 'services', to: 'beds', kind: 'proposes', toSide: 'top' },
+  { id: 'vetLinks', from: 'services', to: 'mastitis', kind: 'involves', toSide: 'top' },
   { id: 'sBeds', from: 'pLame', to: 'beds', kind: 'solves', valence: 'undesired' },
   f('oRested', 'beds', 'rested', 'desired'),
   f('oMastitis', 'beds', 'mastitis', 'undesired'),
@@ -533,15 +533,16 @@ export function compose(s: SceneState): Composition {
     }
   }
 
-  // Water beds: proposed, revealed, reversed
+  // Water beds: tried, revealed, reversed
   if (s.beds > 0) {
     put('pLame', -710, 300, { delay: 0, from: 'farm' })
     put('beds', -470, 300, { delay: 260, from: 'pLame', r: s.beds === 3 ? 1 : 0 })
-    const outs = s.beds === 1 ? ['rested', 'bUnknown'] : ['rested', 'mastitis', 'bUnknown']
+    // Infections sit on top, where the vet's line can reach them from above.
+    const outs = s.beds === 1 ? ['rested', 'bUnknown'] : ['mastitis', 'rested', 'bUnknown']
     // Once reversed, what the beds produced stops flowing; only the lesson of the infections remains.
     column(outs, -320, 300, 42, (i) => ({
       delay: outs[i] === 'mastitis' ? 700 : 520 + i * 70,
-      from: outs[i] === 'mastitis' ? 'bUnknown' : 'beds',
+      from: outs[i] === 'mastitis' ? undefined : 'beds',
       d: s.beds === 3 && outs[i] !== 'mastitis' ? 0.7 : 0,
     }))
     if (s.beds === 3) {
