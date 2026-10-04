@@ -4,7 +4,7 @@
 import { computed, ref } from 'vue'
 import type { Scene } from './useScene'
 import * as voice from './voice'
-import { lineage, NODES } from './world'
+import { EDGES, lineage, NODES } from './world'
 
 export interface Line {
   key: number
@@ -150,7 +150,8 @@ export function useStory(scene: Scene) {
     },
 
     methane() {
-      if (state.cap) return actions.cap()
+      // Once the cap exists, methane is priced, and explains itself like any other output.
+      if (state.cap) return actions.why('methane')
       state.focus = 'methane'
       settle(['farm', 'methane'], 40)
       say(
@@ -192,7 +193,11 @@ export function useStory(scene: Scene) {
       if (id === 'digester' || id === 'spread') state.manureChoice = id
       if (id === 'additive' || id === 'fewer') state.capChoice = id
       state.focus = id
-      const chain = lineage(id).filter((c) => scene.composition().nodes[c])
+      const visible = scene.composition().nodes
+      const chain = lineage(id).filter((c) => visible[c])
+      // A lone node (a rule whose cause is off the map) is framed with what it touches, not by itself.
+      if (chain.length === 1)
+        for (const e of EDGES) if (e.from === id && visible[e.to]) chain.push(e.to)
       if (n.kind !== 'part' && state.zoom === 'farm') state.zoom = 'root'
       if (n.kind === 'part') settle(['farm'], 6, 9)
       else settle(chain.length > 1 ? chain : [id], 40)
@@ -216,7 +221,8 @@ export function useStory(scene: Scene) {
       case 'pManure':
         return state.manure && state.focus !== id ? actions.why(id) : actions.manure()
       case 'methane':
-        return actions.methane()
+        // A second look at unpriced methane brings in the rule that prices it.
+        return !state.cap && state.focus === id ? actions.cap() : actions.methane()
       case 'unknown':
         return actions.fog()
       case 'cap':

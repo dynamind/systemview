@@ -102,7 +102,7 @@ const nodes: NodeDef[] = [
   { id: 'milk', kind: 'sink', label: 'Milk', valence: 'desired', parent: 'farm', relation: 'output of', why: 'Milk is the reason the farm exists. Every other box on this canvas is either feeding it, or cleaning up after it.' },
   { id: 'beef', kind: 'sink', label: 'Beef & calves', valence: 'desired', parent: 'farm', relation: 'output of', why: 'A cow has to calve to give milk, so every litre comes with a calf attached. Beef is the by-product that pays.' },
   { id: 'manure', kind: 'sink', label: 'Manure', valence: 'undesired', parent: 'farm', relation: 'output of' },
-  { id: 'methane', kind: 'sink', label: 'Methane', valence: 'undesired', parent: 'farm', relation: 'output of' },
+  { id: 'methane', kind: 'sink', label: 'Methane', valence: 'undesired', parent: 'farm', relation: 'output of', why: 'Methane leaves with every breath the herd takes. It used to leave for free; since the cap, every tonne counts against the farm.' },
   { id: 'runoff', kind: 'sink', label: 'Nitrogen runoff', valence: 'undesired', diffuse: true, parent: 'farm', relation: 'output of', why: 'Runoff is diffuse. It leaves through every field at once, a little at a time. Diffuse outputs are the hardest to solve, and the easiest to leave off the map.' },
   { id: 'unknown', kind: 'sink', label: '?', note: 'not yet known', valence: 'unknown', parent: 'farm', relation: 'output of' },
 
