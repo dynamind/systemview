@@ -139,6 +139,23 @@ export function useScene() {
     wake()
   }
 
+  /**
+   * Two fingers: the world points under them stay under them. Moves from
+   * (ax, ay) at distance ad to (bx, by) at distance bd, with no easing.
+   */
+  function pinch(ax: number, ay: number, ad: number, bx: number, by: number, bd: number) {
+    const a = screenArea()
+    const z = zoom()
+    const lz = Math.min(Math.max(Math.log((z * bd) / ad), Math.log(0.15)), Math.log(9))
+    const z2 = Math.exp(lz)
+    const wx = (ax - a.cx) / z + camera.get('x')
+    const wy = (ay - a.cy) / z + camera.get('y')
+    camera.springs.lz.jump(lz)
+    camera.springs.x.jump(wx - (bx - a.cx) / z2)
+    camera.springs.y.jump(wy - (by - a.cy) / z2)
+    wake()
+  }
+
   /** Moves the camera 1:1 with the pointer or trackpad, keeping any glide already in progress. */
   function pan(dx: number, dy: number) {
     const z = zoom()
@@ -233,6 +250,7 @@ export function useScene() {
     zoom,
     toWorld,
     wheel,
+    pinch,
     pan,
     screenArea,
     setBottomInset,

@@ -110,8 +110,7 @@ function onPointerMove(ev: PointerEvent) {
   if (pinch) {
     if (touches.size < 2) return
     const now = twoFingers()
-    sc.pan(now.x - pinch.x, now.y - pinch.y)
-    if (pinch.d > 0 && now.d > 0) sc.wheel(now.x, now.y, -Math.log(now.d / pinch.d) / 0.0016)
+    if (pinch.d > 0 && now.d > 0) sc.pinch(pinch.x, pinch.y, pinch.d, now.x, now.y, now.d)
     pinch = now
     return
   }
