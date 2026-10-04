@@ -361,8 +361,11 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
           <rect :x="-n.w / 2" :y="-n.h / 2" :width="n.w" :height="n.h" rx="3" class="box rule-box" />
           <clipPath :id="`bar-${n.id}`"><rect :x="-n.w / 2" :y="-n.h / 2" :width="n.w" :height="n.h" rx="3" /></clipPath>
           <rect :x="-n.w / 2" :y="-n.h / 2" :width="3" :height="n.h" class="rule-bar" :clip-path="`url(#bar-${n.id})`" />
-          <text :y="-n.h / 2 - 7" font-size="7.5" class="caps rule" text-anchor="middle">rule · problem by design</text>
-          <text :font-size="FONT.box" class="label rule" text-anchor="middle" dominant-baseline="central">§ {{ n.def.label }}</text>
+          <text :y="-n.h / 2 - 7" font-size="7.5" class="caps rule" text-anchor="middle">{{ n.r > 0.5 ? 'rule · changed' : n.def.tag ?? 'rule · problem by design' }}</text>
+          <text :font-size="FONT.box" class="label rule" :opacity="1 - 0.5 * n.r" text-anchor="middle" dominant-baseline="central">§ {{ n.def.label }}</text>
+          <!-- A rule that no longer holds is struck through, and says what changed it -->
+          <line v-if="n.r > 0.01" :x1="-n.w / 2 + 10" :x2="-n.w / 2 + 10 + (n.w - 20) * Math.min(1, Math.max(0, n.r))" y1="0" y2="0" class="strike" />
+          <text v-if="n.def.note && n.r > 0.5" :y="n.h / 2 + 14" font-size="9" class="note serif" text-anchor="middle">{{ n.def.note }}</text>
         </template>
 
         <template v-else-if="n.def.kind === 'hypothesis'">

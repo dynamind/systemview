@@ -763,6 +763,106 @@
   "A colour on the wall does it without hanging anything at all. The higher the rung, the less the answers look like a drill.": {
    "file": "acf1e6c5b6d5.m4a",
    "duration": 6090
+  },
+  "A team asks for a CRM licence. Everyone buys one; it’s just what you do.": {
+   "file": "e8d65f5f168b.m4a",
+   "duration": 4999
+  },
+  "What’s the CRM for? Keeping track of customers, the way this team sells.": {
+   "file": "5b8629e1aac1.m4a",
+   "duration": 4171
+  },
+  "And that’s there for customers who come back. That’s what they actually want. The licence is one way of getting there.": {
+   "file": "58251a8773ed.m4a",
+   "duration": 6014
+  },
+  "The ladder as far as it matters here: customers who come back, kept track of the way this team sells. The licence answers that from below.": {
+   "file": "ead34b4d3d8d.m4a",
+   "duration": 7854
+  },
+  "What does the package leave behind? It works on day one, and someone else keeps it running. It also costs a licence per seat, every year. And it was made for everyone, so it fits no one exactly: workarounds, and spreadsheets on the side. Plus a question mark: the vendor’s roadmap.": {
+   "file": "bfc7c917b936.m4a",
+   "duration": 13900
+  },
+  "Why not build our own? Because of a rule: crafting software is expensive. It takes a team, months, and several tries to get right. Under that rule, buying generic is the sensible answer. The package is there because of the rule, not because it fits.": {
+   "file": "33add3dbf686.m4a",
+   "duration": 15106
+  },
+  "Under the rule, building your own means a team and months of work before anything runs. That’s why the package won. Ask what has changed.": {
+   "file": "68c7e2b4cb1e.m4a",
+   "duration": 7628
+  },
+  "Agentic AI changes the rule. Crafting gets cheap: a working version in days, changed as often as the work changes. The rule that made buying sensible is weakening, and the answer it kept off the table is back on it.": {
+   "file": "c5a2fd11811a.m4a",
+   "duration": 13064
+  },
+  "Built to fit. It follows the way this team sells, and there’s no licence. The workarounds go, and so does the vendor’s roadmap. It leaves its own: the upkeep is ours now, and a question mark. Who understands it in three years? Neither answer is clean. But the rule that decided between them has changed.": {
+   "file": "d964e4a9f871.m4a",
+   "duration": 19157
+  },
+  "Back to the package. It works on day one and someone else runs it, and it costs a licence, a roadmap that isn’t ours, and a way of working bent to fit.": {
+   "file": "e2573162a2f4.m4a",
+   "duration": 9204
+  },
+  "The whole picture, as far as we’ve looked.": {
+   "file": "1571e87d24c8.m4a",
+   "duration": 2049
+  },
+  "Generic software was a sound answer to a rule: crafting is expensive. When a rule changes, go back to the answers it shaped.": {
+   "file": "3a46db622233.m4a",
+   "duration": 7549
+  },
+  "A CRM package is what teams ask for. It’s a solution, made for every team at once, and it exists for something else.": {
+   "file": "cb6d2a07b2d3.m4a",
+   "duration": 7280
+  },
+  "Keeping track of customers, the way this team actually sells. The package knows customers; it doesn’t know this team.": {
+   "file": "eca706d19389.m4a",
+   "duration": 6946
+  },
+  "This is what they want: customers who come back. Everything below it is one way of getting there.": {
+   "file": "edbd873bd984.m4a",
+   "duration": 5595
+  },
+  "Install it, add users, go. Someone else wrote it, tested it and keeps it running. That’s the real strength of buying.": {
+   "file": "eef43bfdb91e.m4a",
+   "duration": 6527
+  },
+  "The bill comes every year, for every seat, whether the team uses half the features or all of them.": {
+   "file": "10e4056e1ef9.m4a",
+   "duration": 5764
+  },
+  "Built for everyone, it fits no one exactly. The team bends its way of selling to the tool, and what doesn’t fit ends up in a spreadsheet.": {
+   "file": "cd215c1b27f5.m4a",
+   "duration": 8264
+  },
+  "Prices change, features go, the vendor gets bought. The roadmap is someone else’s, and so is the question mark.": {
+   "file": "645e0c4d730e.m4a",
+   "duration": 6343
+  },
+  "Software takes a team, months, and several tries to get right. Under that rule, buying something generic is the sensible answer.": {
+   "file": "530c5192c567.m4a",
+   "duration": 7676
+  },
+  "Software made for this team: its customers, its way of selling. Under the old rule, too slow and too dear. Under the new one, a real answer.": {
+   "file": "d3514d22875c.m4a",
+   "duration": 8906
+  },
+  "It follows the way the team sells, and it changes when the team does. No workarounds, no spreadsheet on the side.": {
+   "file": "cf5b57c4fd70.m4a",
+   "duration": 6835
+  },
+  "Nothing to pay per seat. The cost moves from a licence to the work of keeping it right.": {
+   "file": "426648861f53.m4a",
+   "duration": 3858
+  },
+  "Nobody else patches it, hosts it or answers when it breaks. Cheaper to make is not the same as free to keep.": {
+   "file": "8ba27c7ad4e6.m4a",
+   "duration": 6540
+  },
+  "Code an agent wrote in a week still has to make sense to someone in three years. Whether it does is the new question mark.": {
+   "file": "a4ab3576765a.m4a",
+   "duration": 6412
   }
  }
 }
