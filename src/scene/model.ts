@@ -45,10 +45,20 @@ export interface NodeDef {
   tracedBy?: string
   /** Other words people use for it. */
   aka?: string[]
-  /** Problem: the question that opens it. */
+  /** Problem: the question that opens it. Solution: the question that brings it forward. */
   ask?: string
   /** Problem: said when it first opens. Solution: said when swapped in. Condensing output: said when it surfaces. */
   says?: string
+  /** Problem: said when it's opened again. */
+  again?: string
+  /** Output with a problem: said on the first look, before the problem opens; the next look opens it. */
+  prelude?: string
+
+  // Finishing touches by hand, for derived worlds.
+  /** Part: where it sits inside the box. */
+  at?: [x: number, y: number]
+  /** Problem: moves its branch from where the layout would put it. */
+  nudge?: [dx: number, dy: number]
 }
 
 export interface EdgeDef {

@@ -49,8 +49,20 @@ export interface World {
   nodes: NodeDef[]
   /** Flows inside the box: from an input or part, to a part or output. Parts are listed in flow order. */
   inner: [from: string, to: string, valence?: Valence, extra?: Partial<EdgeDef>][]
-  /** The narrated tour: problems, and 'fog', in the order the story tells them. */
+  /**
+   * The narrated tour, in the order the story tells it: a problem opens (an experiment plays through, and the
+   * alternatives get tried unless the tour names them), a solution is swapped in, an output with a prelude is
+   * looked at, and 'fog' shows the guesses and confirms the first.
+   */
   tour: string[]
+
+  // Finishing touches by hand: each one optional.
+  /** Inputs and outputs in the order they're drawn, where flow order doesn't say it best. */
+  boundary?: string[]
+  /** Words that lead straight to a node, checked in order before anything else is matched. */
+  intents?: [RegExp, string][]
+  /** The tour's closing line, in place of the derived chain. */
+  chain?: string
 }
 
 export interface DerivedState extends BaseState {
@@ -119,14 +131,20 @@ export function derive(w: World): Domain<DerivedState> {
   for (const id of parts) {
     const r = rank[id]
     const k = (shared[r] = (shared[r] ?? -1) + 1)
-    partAt[id] = { x: -110 + (r * 220) / maxRank, y: (r % 2 ? 24 : -24) + k * 26 }
+    const [x, y] = N[id].at ?? [-110 + (r * 220) / maxRank, (r % 2 ? 24 : -24) + k * 26]
+    partAt[id] = { x, y }
   }
   // Inputs and outputs line up with where they land inside, so the flows through the boundary don't cross.
   const landing = (id: string, end: 0 | 1) => {
     const at = w.inner.filter((f) => f[end] === id).map((f) => partAt[f[1 - end] as string]).find(Boolean)
     return at ? at.y * 1000 + (end ? -at.x : at.x) : Infinity
   }
-  const byLanding = (ids: string[], end: 0 | 1) => ids.map((id, i) => ({ id, k: landing(id, end), i })).sort((a, b) => a.k - b.k || a.i - b.i).map((e) => e.id)
+  const told = (id: string) => (w.boundary?.includes(id) ? w.boundary.indexOf(id) : Infinity)
+  const byLanding = (ids: string[], end: 0 | 1) =>
+    ids
+      .map((id, i) => ({ id, k: landing(id, end), i }))
+      .sort((a, b) => told(a.id) - told(b.id) || a.k - b.k || a.i - b.i)
+      .map((e) => e.id)
   sources.splice(0, Infinity, ...byLanding(sources, 0))
   plainOutputs.splice(0, Infinity, ...byLanding(plainOutputs, 1))
 
@@ -243,9 +261,10 @@ export function derive(w: World): Domain<DerivedState> {
         if (!s.open.includes(c)) continue
         const at = items.find((it) => it.id === end)!
         const input = N[end].kind === 'source'
-        const child = block(s, c, input ? x + 240 : x + 390 + reach(end), end)
+        const [nx, ny] = N[c].nudge ?? [0, 0]
+        const child = block(s, c, (input ? x + 240 : x + 390 + reach(end)) + nx, end)
         const b = bounds(child)
-        let dy = input ? at.y - 110 : at.y
+        let dy = (input ? at.y - 110 : at.y) + ny
         if (dy + b.top < floor + 24) dy = floor + 24 - b.top
         floor = dy + b.bottom
         items.push(...child.map((it) => ({ ...it, y: it.y + dy })))
@@ -271,14 +290,18 @@ export function derive(w: World): Domain<DerivedState> {
       parts.forEach((id, i) => put(id, partAt[id].x, partAt[id].y, { delay: 320 + i * 70, from: system, s: 1 }))
     }
 
-    // Branches off the outputs stack to the right, clear of the longest label, and stay centred on what they grew from.
-    const px = Math.max(690, 420 + Math.max(...outs.map(reach)))
+    // Whatever opens right of the outputs stays clear of the labels it sits beside.
+    const clear = (top: number, bottom: number) =>
+      Math.max(690, ...outs.filter((o) => out.nodes[o].y > top - 12 && out.nodes[o].y < bottom + 12).map((o) => 420 + reach(o)))
+
+    // Branches off the outputs stack to the right and stay centred on what they grew from.
     const right: { items: Placed[]; y: number; top: number; bottom: number }[] = []
     for (const o of outs)
       for (const p of problemsOf(o))
         if (s.open.includes(p)) {
-          const items = block(s, p, px, o)
-          right.push({ items, y: out.nodes[o].y, ...bounds(items) })
+          const [nx, ny] = N[p].nudge ?? [0, 0]
+          const items = block(s, p, nx, o)
+          right.push({ items, y: out.nodes[o].y + ny, ...bounds(items) })
         }
     let floor = -Infinity
     const pushed = right.map((b) => {
@@ -287,26 +310,34 @@ export function derive(w: World): Domain<DerivedState> {
       return y - b.y
     })
     const shift = pushed.length ? pushed.reduce((a, b) => a + b, 0) / pushed.length : 0
-    right.forEach((b, i) => place(b.items, b.y + pushed[i] - shift))
-    const rightBottom = right.length ? Math.max(...right.map((b, i) => b.y + pushed[i] - shift + b.bottom)) : 0
+    const placedRight: Placed[] = []
+    right.forEach((b, i) => {
+      const y = b.y + pushed[i] - shift
+      const x = clear(y + b.top, y + b.bottom)
+      placedRight.push(...b.items.map((it) => ({ ...it, x: it.x + x, y: it.y + y })))
+    })
+    place(placedRight)
 
     // Problems that arise inside the system open below it, each under the last.
     let below = 300
     for (const p of problemsOf(system))
       if (s.open.includes(p)) {
-        const items = block(s, p, -710, system)
+        const [nx, ny] = N[p].nudge ?? [0, 0]
+        const items = block(s, p, -710 + nx, system)
         const b = bounds(items)
-        const y = Math.max(below, below - b.top - 60)
+        const y = Math.max(below, below - b.top - 60) + ny
         place(items, y)
         below = y + b.bottom + 90
       }
 
-    // The fog: guesses, not facts
+    // The fog: guesses, not facts. It steps down only under the boxes it would run into.
     if (s.fog) {
-      const y0 = Math.max(400, rightBottom + 85)
-      hypotheses
-        .filter((id) => !s.promoted.includes(id))
-        .forEach((id, i) => put(id, px + 30, y0 + i * 74, { delay: 200 + i * 160, from: fogSink, g: 1 }))
+      const left = hypotheses.filter((id) => !s.promoted.includes(id))
+      const half = sizeOf({ id: '', kind: 'hypothesis', label: '' }).w / 2
+      const above = placedRight.filter((it) => Math.abs(it.x - 720) < sizeOf(N[it.id]).w / 2 + half + 10)
+      const y0 = Math.max(400, ...above.map((it) => extent(it)[1] + 85))
+      const hx = clear(y0 - 37, y0 + left.length * 74) + 30
+      left.forEach((id, i) => put(id, hx, y0 + i * 74, { delay: 200 + i * 160, from: fogSink, g: 1 }))
     }
 
     return finish(out, s, N, edges)
@@ -330,6 +361,7 @@ export function derive(w: World): Domain<DerivedState> {
       return `${from} ${N[sol].label} answers it, and leaves behind ${residue(sol)}.`
     },
     again: (p: string) => {
+      if (N[p].again) return N[p].again
       const sols = solutionsOf(p)
       if (experiment(p)) return `“${N[sols[0]].label}”: a solution that turned out to be an experiment. It failed, and ${w.who} still came out knowing more than it did.`
       if (sols.length > 1) return `“${N[p].label}”. ${NUMBERS[sols.length] ?? sols.length} answers to one problem, each leaving different things behind.`
@@ -338,7 +370,7 @@ export function derive(w: World): Domain<DerivedState> {
     swapped: (sol: string) => N[sol].says ?? `${N[sol].label} instead. What it leaves behind: ${residue(sol)}.`,
     reveal: (o: string) => N[o].says ?? `Then the fog condensed: ${low(N[o].label)}. The question mark gave up one secret, and kept the rest.`,
     promote: (h: string) =>
-      `“${N[h].label}” is now a known undesirable, joining the outputs of ${w.who} and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.`,
+      `“${N[h].label}” is now a known undesirable, joining ${w.who}’s outputs and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.`,
     why: (id: string) => {
       const n = N[id]
       const p = n.parent ? N[n.parent] : undefined
@@ -346,6 +378,7 @@ export function derive(w: World): Domain<DerivedState> {
     },
     /** Follows a node back to the system's purpose, in one breath. */
     chain: (id: string) => {
+      if (w.chain) return w.chain
       const boxes = lineage(N, id).filter((c) => ['problem', 'solution'].includes(N[c].kind))
       const steps = boxes.slice(2).map((c) => (N[c].kind === 'solution' ? `which came from “${low(N[c].label)}”` : `chosen to answer “${low(N[c].label)}”`))
       return `Follow any box back and you reach the reason it exists. “${N[boxes[0]].label}” answers “${low(N[boxes[1]].label)}”, ${steps.join(', ')}: a problem only because ${w.who} exists to ${w.goal}.`
@@ -353,7 +386,7 @@ export function derive(w: World): Domain<DerivedState> {
   }
   /** The tour closes on the deepest box of the last experiment it tells. */
   const deepest = (() => {
-    const p = [...w.tour].reverse().find((t) => t !== 'fog' && experiment(t))
+    const p = [...w.tour].reverse().find((t) => N[t]?.kind === 'problem' && experiment(t))
     if (!p) return undefined
     let cur = p
     for (;;) {
@@ -368,6 +401,7 @@ export function derive(w: World): Domain<DerivedState> {
     for (const n of nodes) {
       if (n.kind !== 'system' || n.why) all.push(say.why(n.id))
       if (n.kind === 'problem') all.push(say.opens(n.id), say.again(n.id))
+      if (n.prelude) all.push(n.prelude)
       if (n.kind === 'solution' && solutionsOf(n.parent!).length > 1) all.push(say.swapped(n.id))
       if (n.condenses) all.push(say.reveal(n.id))
       if (n.kind === 'hypothesis') all.push(say.promote(n.id))
@@ -379,7 +413,7 @@ export function derive(w: World): Domain<DerivedState> {
   // ------------------------------------------------------------ the conversation
 
   function script({ scene, state, say: speak, settle }: Kit<DerivedState>): Script {
-    let last: string | undefined = w.tour.find((t) => t !== 'fog')
+    let last: string | undefined = w.tour.find((t) => topProblems.includes(t))
     const open = (p: string) => !state.open.includes(p) && (state.open = [...state.open, p])
     const fogView = () => [fogSink!, ...state.promoted.map(named), ...hypotheses.filter((h) => !state.promoted.includes(h))]
 
@@ -490,16 +524,34 @@ export function derive(w: World): Domain<DerivedState> {
       show(id: string) {
         const n = N[id]
         if (n.kind === 'problem') return actions.branch(id)
+        if (prelude(id)) return actions.look(id)
         if (n.kind === 'part' && state.zoom !== 'inside') state.zoom = 'inside'
         ensure(id)
         scene.sync()
         actions.why(id)
       },
 
+      /** An output's prelude: what it is before anything makes it a problem. */
+      look(id: string) {
+        state.zoom = 'root'
+        state.focus = id
+        settle([system, id], 40)
+        speak(N[id].prelude!)
+      },
+
+      /** Asked about a problem: opens it, or moves its experiment on, or tells it again. */
+      go(p: string) {
+        const step = state.open.includes(p) && experiment(p) ? nextStep(p) : undefined
+        if (step) return step()
+        actions.branch(p)
+      },
+
       clearFocus() {
         if (state.focus) state.focus = null
       },
     }
+    /** Said before its problem opens, until the output has been looked at once. */
+    const prelude = (id: string) => N[id].prelude && problemsOf(id).some((p) => !state.open.includes(p))
 
     function click(id: string) {
       const n = N[id]
@@ -518,8 +570,11 @@ export function derive(w: World): Domain<DerivedState> {
       const problems = n.kind === 'sink' || n.kind === 'source' ? problemsOf(id) : []
       if (problems.length) {
         const p = problems[0]
+        if (prelude(id) && state.focus !== id) return actions.look(id)
         if (!state.open.includes(p) || state.focus === id) return actions.branch(p)
       }
+      // A problem explains itself; looked at again, it's told again.
+      if (n.kind === 'problem' && state.focus === id) return actions.branch(id)
       actions.why(id)
     }
 
@@ -535,19 +590,30 @@ export function derive(w: World): Domain<DerivedState> {
 
     function ask(text: string) {
       const has = (re: RegExp) => re.test(text)
+      // A suggestion typed out does what clicking it does.
+      const bare = (x: string) => x.toLowerCase().replace(/[?“”"]/g, '').trim()
+      const asked = nodes.find((n) => n.ask && bare(n.ask) === bare(text))
+      if (asked) return asked.kind === 'solution' ? actions.swap(asked.parent!, asked.id) : actions.go(asked.id)
       if (has(/\bwhy\b|purpose|what does .* (solve|do)|exist|for\??$/)) {
         const id = mentioned(text)
         return id ? (actions.show(id), undefined) : speak(WHICH)
       }
-      if (has(/instead|alternative|swap|other option|compare|trade.?off|cheaper/) && last && solutionsOf(last).length > 1) return actions.swap(last)
+      if (has(/instead|alternative|swap|other option|compare|trade.?off|cheaper/)) {
+        // The branch we're in, or else the latest one with answers to choose between.
+        const multi = (p: string) => solutionsOf(p).length > 1
+        const p = [last, ...[...state.open].reverse(), ...w.tour].find((p) => p && N[p]?.kind === 'problem' && multi(p))
+        if (p) return actions.swap(p)
+      }
       if (has(/inside|open|zoom in|how does|look in|parts/)) return actions.open()
       if (has(/back|zoom out|overview|whole|everything|reset|start/)) return actions.overview()
+      const intent = w.intents?.find(([re]) => has(re))?.[1]
+      if (intent) return N[intent].kind === 'problem' ? actions.go(intent) : actions.show(intent)
       if (has(/next|then|happened|after/) && last && nextStep(last)) return nextStep(last)!()
+      if (has(/unknown|fog|don.?t know|emerg|blind|surprise|side.?effect|\?/)) return actions.fog()
       if (has(/promote|confirm|it.?s real|known/)) {
         const h = hypotheses.find((h) => !state.promoted.includes(h))
         return state.fog && h ? actions.promote(h) : actions.fog()
       }
-      if (has(/unknown|fog|don.?t know|emerg|blind|surprise|side.?effect|\?/)) return actions.fog()
       const id = mentioned(text)
       if (id) return actions.show(id)
       speak(LOST)
@@ -578,17 +644,19 @@ export function derive(w: World): Domain<DerivedState> {
           const hidden = condensing(sol).some((o) => !state.revealed.includes(o))
           const undo = condensing(sol).flatMap(problemsOf).flatMap(solutionsOf)[0]
           add(hidden || !undo ? 'What happened next?' : `What did ${N[undo].by ?? 'they'} do?`, step)
-        } else if (sols.length > 1) {
-          const alt = sol === sols[0] ? sols[1] : sols[0]
-          add(sol === sols[0] ? `Why not “${low(N[alt].label)}”?` : `Compare with “${low(N[alt].label)}”`, () => actions.swap(last!, alt))
+        } else {
+          // A question the chosen answer raised comes before trying another answer.
+          const raised = [...inputsOf(sol), ...shownOutputs(state, sol)].flatMap(problemsOf).find((c) => !state.open.includes(c))
+          if (raised) add(N[raised].ask ?? `What about “${low(N[raised].label)}”?`, () => actions.branch(raised))
+          else if (sols.length > 1) {
+            const alt = sol === sols[0] ? sols[1] : sols[0]
+            add(N[alt].ask ?? (sol === sols[0] ? `Why not “${low(N[alt].label)}”?` : `Compare with “${low(N[alt].label)}”`), () => actions.swap(last!, alt))
+          }
         }
       }
-      // Then branches not yet opened, in the order the story tells them.
-      for (const t of w.tour) {
-        if (t === 'fog') {
-          if (!state.fog) add('What don’t we know yet?', actions.fog)
-        } else if (!state.open.includes(t)) add(N[t].ask ?? `What about “${low(N[t].label)}”?`, () => actions.branch(t))
-      }
+      // Then branches not yet opened, in the order the story tells them; what nobody knows comes last.
+      for (const t of w.tour) if (topProblems.includes(t) && !state.open.includes(t)) add(N[t].ask ?? `What about “${low(N[t].label)}”?`, () => actions.branch(t))
+      if (fogSink && !state.fog) add('What don’t we know yet?', actions.fog)
       const chosen = last && state.open.includes(last) ? chosenOf(state, last) : undefined
       if (chosen && state.focus !== chosen && up?.id !== chosen) add(`Why does “${low(N[chosen].label)}” exist?`, () => actions.why(chosen))
       if (state.zoom === 'root' && (state.open.length || state.fog)) add('Show the whole', actions.overview)
@@ -607,16 +675,18 @@ export function derive(w: World): Domain<DerivedState> {
       actions.overview,
     ]
     for (const t of w.tour) {
-      if (t === 'fog') {
-        tour.push(actions.fog, () => actions.promote(hypotheses[0]))
-        continue
+      const n = N[t]
+      if (t === 'fog') tour.push(actions.fog, () => actions.promote(hypotheses[0]))
+      else if (n.kind === 'solution') tour.push(() => actions.swap(n.parent!, t))
+      else if (n.prelude) tour.push(() => actions.look(t))
+      else if (n.kind === 'problem') {
+        tour.push(() => actions.branch(t))
+        if (experiment(t)) {
+          let steps = 0
+          for (let p: string | undefined = t; p; p = condensing(solutionsOf(p)[0]).flatMap(problemsOf)[0]) steps += condensing(solutionsOf(p)[0]).length * 2
+          for (let i = 0; i < steps; i++) tour.push(() => nextStep(last!)?.())
+        } else if (!solutionsOf(t).some((sol) => w.tour.includes(sol))) for (const alt of solutionsOf(t).slice(1)) tour.push(() => actions.swap(t, alt))
       }
-      tour.push(() => actions.branch(t))
-      if (experiment(t)) {
-        let steps = 0
-        for (let p: string | undefined = t; p; p = condensing(solutionsOf(p)[0]).flatMap(problemsOf)[0]) steps += condensing(solutionsOf(p)[0]).length * 2
-        for (let i = 0; i < steps; i++) tour.push(() => nextStep(last!)?.())
-      } else for (const alt of solutionsOf(t).slice(1)) tour.push(() => actions.swap(t, alt))
     }
     if (deepest) tour.push(() => actions.why(deepest, say.chain(deepest)))
     tour.push(() => {
