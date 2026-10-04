@@ -505,10 +505,11 @@ export function compose(s: SceneState): Composition {
   put('farm', 0, 0, { f: s.zoom === 'farm' ? 1 : 0 })
   column(['energy', 'genetics', 'water', 'feed', 'services'], -420, 0, 50, (i) => ({ delay: 120 + i * 60, from: 'farm' }))
   // Confirmed guesses line up with the other outputs, above the question mark: the fog shrinks, it never closes.
-  // The column grows downwards, so the branches hanging off the outputs above stay put.
+  // The column stays centred on the farm; the problems hanging off the outputs move with them.
   const confirmed = s.fog ? s.promoted : []
+  const lift = -25 * confirmed.length
   ;['milk', 'beef', 'manure', 'methane', 'runoff', ...confirmed.map(named), 'unknown'].forEach((id, i) =>
-    put(id, 420, -125 + i * 50, i < 5 || id === 'unknown' ? { delay: 120 + i * 60, from: 'farm' } : { delay: 150, from: confirmed[i - 5] }),
+    put(id, 420, -125 + lift + i * 50, i < 5 || id === 'unknown' ? { delay: 120 + i * 60, from: 'farm' } : { delay: 150, from: confirmed[i - 5] }),
   )
 
   // Inside
@@ -526,20 +527,20 @@ export function compose(s: SceneState): Composition {
 
   // Manure becomes a problem and grows solutions
   if (s.manure) {
-    put('pManure', 690, -230, { delay: 0, from: 'manure' })
+    put('pManure', 690, -230 + lift, { delay: 0, from: 'manure' })
     const chosen = s.manureChoice
     const alt = chosen === 'digester' ? 'spread' : 'digester'
-    put(chosen, 930, -230, { delay: 260, from: 'pManure' })
-    put(alt, 930, -95, { delay: 380, from: 'pManure', g: 1, s: 0.86 })
+    put(chosen, 930, -230 + lift, { delay: 260, from: 'pManure' })
+    put(alt, 930, -95 + lift, { delay: 380, from: 'pManure', g: 1, s: 0.86 })
     const outs = chosen === 'digester' ? ['biogas', 'digestate', 'leaks', 'dUnknown'] : ['soil', 'nitrate', 'ammonia', 'sUnknown']
-    column(outs, 1080, -230, 42, (i) => ({ delay: 520 + i * 70, from: chosen }))
+    column(outs, 1080, -230 + lift, 42, (i) => ({ delay: 520 + i * 70, from: chosen }))
     if (chosen === 'digester') {
-      put('capital', 800, -330, { delay: 420, from: 'digester' })
+      put('capital', 800, -330 + lift, { delay: 420, from: 'digester' })
       // Whether it pays is the balance across the digester's boundary; when it doesn't, that's a problem.
       if (s.pays) {
-        put('pPays', 930, -440, { delay: 0, from: 'capital' })
-        put('subsidy', 1170, -440, { delay: 300, from: 'pPays' })
-        column(['paysOff', 'policy', 'subUnknown'], 1320, -440, 42, (i) => ({ delay: 520 + i * 70, from: 'subsidy' }))
+        put('pPays', 930, -440 + lift, { delay: 0, from: 'capital' })
+        put('subsidy', 1170, -440 + lift, { delay: 300, from: 'pPays' })
+        column(['paysOff', 'policy', 'subUnknown'], 1320, -440 + lift, 42, (i) => ({ delay: 520 + i * 70, from: 'subsidy' }))
       }
     }
   }
@@ -568,14 +569,14 @@ export function compose(s: SceneState): Composition {
     // Confirmed guesses have long names; the branch steps aside so they don't run under it.
     const reach = Math.max(0, ...confirmed.map((h) => 434 + sizeOf(NODES[named(h)]).w))
     const dx = Math.max(0, reach + 24 - (690 - Math.max(sizeOf(NODES.cap).w, sizeOf(NODES.pCap).w) / 2))
-    put('cap', 690 + dx, 100, { delay: 0 })
-    put('pCap', 690 + dx, 178, { delay: 280, from: 'methane' })
+    put('cap', 690 + dx, 100 + lift, { delay: 0 })
+    put('pCap', 690 + dx, 178 + lift, { delay: 280, from: 'methane' })
     const chosen = s.capChoice
     const alt = chosen === 'additive' ? 'fewer' : 'additive'
-    put(chosen, 930 + dx, 178, { delay: 520, from: 'pCap' })
-    put(alt, 930 + dx, 300, { delay: 640, from: 'pCap', g: 1, s: 0.86 })
+    put(chosen, 930 + dx, 178 + lift, { delay: 520, from: 'pCap' })
+    put(alt, 930 + dx, 300 + lift, { delay: 640, from: 'pCap', g: 1, s: 0.86 })
     const outs = chosen === 'additive' ? ['lessCH4', 'costL', 'aUnknown'] : ['lessCH4b', 'income', 'leakage', 'fUnknown']
-    column(outs, 1080 + dx, 178, 38, (i) => ({ delay: 760 + i * 70, from: chosen }))
+    column(outs, 1080 + dx, 178 + lift, 38, (i) => ({ delay: 760 + i * 70, from: chosen }))
   }
 
   // The fog: guesses, not facts
