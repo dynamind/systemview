@@ -12,6 +12,7 @@ const sc = props.scene
 const canvas = ref<HTMLCanvasElement>()
 let ctx: CanvasRenderingContext2D | null = null
 let dpr = 1
+const RENDER = new URLSearchParams(location.search).has('render')
 
 // ------------------------------------------------------------ colours
 
@@ -25,7 +26,8 @@ function readColors() {
 function resize() {
   const el = canvas.value
   if (!el) return
-  dpr = Math.min(window.devicePixelRatio || 1, 2)
+  // Capped for frame rate, except when rendering video frames (?render), where sharpness wins.
+  dpr = Math.min(window.devicePixelRatio || 1, RENDER ? 4 : 2)
   el.width = Math.round(sc.viewport.w * dpr)
   el.height = Math.round(sc.viewport.h * dpr)
 }

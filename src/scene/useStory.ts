@@ -3,6 +3,7 @@
 
 import { computed, ref } from 'vue'
 import type { Scene } from './useScene'
+import * as voice from './voice'
 import { lineage, NODES } from './world'
 
 export interface Line {
@@ -18,6 +19,8 @@ const BRANCH_OUTPUTS = {
   fewer: ['lessCH4b', 'income', 'leakage', 'fUnknown'],
 }
 
+const INTRO = 'A dairy farm, as a black box. Things go in, things come out. Some are wanted, some aren’t, and some of them we can’t name yet.'
+
 const BEDS_VIEW = {
   1: ['pLame', 'beds', 'rested', 'bUnknown'],
   2: ['services', 'pLame', 'beds', 'rested', 'mastitis', 'bUnknown'],
@@ -32,7 +35,10 @@ export function useStory(scene: Scene) {
   let lastBranch: 'manure' | 'cap' | 'beds' = 'manure'
   let tourToken = 0
 
-  const say = (text: string) => (line.value = { key: line.value.key + 1, text, voice: 'system' })
+  const say = (text: string) => {
+    line.value = { key: line.value.key + 1, text, voice: 'system' }
+    if (touring.value) voice.play(text)
+  }
 
   function settle(view: string[] | 'all', pad?: number, max?: number) {
     scene.sync()
@@ -312,17 +318,22 @@ export function useStory(scene: Scene) {
 
   const pause = (ms: number, token: number) =>
     new Promise<boolean>((r) => setTimeout(() => r(token === tourToken), ms))
-  const readingTime = () => 1600 + line.value.text.split(/\s+/).length * 245
+  // A spoken line holds for its own length plus a breath; an unspoken one for its reading time.
+  const holdTime = () => {
+    const spoken = voice.duration(line.value.text)
+    return spoken ? spoken + 900 : 1600 + line.value.text.split(/\s+/).length * 245
+  }
 
   async function tour() {
     if (touring.value) return stopTour()
     const token = ++tourToken
     touring.value = true
+    await voice.ready
     Object.assign(state, { manure: false, cap: false, fog: false, promoted: [], manureChoice: 'digester', capChoice: 'additive', pays: false, beds: 0 })
     const steps: (() => void)[] = [
       () => {
         actions.overview()
-        say('A dairy farm, as a black box. Things go in, things come out. Some are wanted, some aren’t, and one of them we can’t name yet.')
+        say(INTRO)
       },
       actions.open,
       actions.overview,
@@ -351,7 +362,7 @@ export function useStory(scene: Scene) {
     for (const step of steps) {
       if (token !== tourToken) return
       step()
-      if (!(await pause(readingTime(), token))) return
+      if (!(await pause(holdTime(), token))) return
     }
     touring.value = false
   }
@@ -359,10 +370,11 @@ export function useStory(scene: Scene) {
   function stopTour() {
     tourToken++
     touring.value = false
+    voice.stop()
   }
 
   function intro() {
-    say('A dairy farm, as a black box. Things go in, things come out. Some are wanted, some aren’t, and one of them we can’t name yet.')
+    say(INTRO)
   }
 
   const purposePath = computed(() => {

@@ -9,12 +9,14 @@ type NodeKey = 'x' | 'y' | 'w' | 'h' | 'o' | 's' | 'f' | 'g' | 'd' | 'r'
 type EdgeKey = 'o' | 'p' | 'g' | 'd'
 
 export const SAFE = { top: 96, bottom: 270, side: 48 }
+/** Bottom inset while narrating: the prompt and suggestions are hidden, so the scene gets the room. */
+export const SAFE_BOTTOM_NARRATING = 170
 
 export function useScene() {
   const state = reactive<SceneState>(initialState())
   const nodeAnims = new Map<string, Animated<NodeKey>>()
   const edgeAnims = new Map<string, Animated<EdgeKey>>()
-  const camera = new Animated<'x' | 'y' | 'lz'>({ x: 0, y: 0, lz: Math.log(0.4) }, CAMERA)
+  const camera = new Animated<'x' | 'y' | 'lz' | 'b'>({ x: 0, y: 0, lz: Math.log(0.4), b: SAFE.bottom }, CAMERA)
   const viewport = reactive({ w: window.innerWidth, h: window.innerHeight })
   const tick = shallowRef(0)
   let comp: Composition = { nodes: {}, edges: {} }
@@ -73,9 +75,10 @@ export function useScene() {
 
   // ------------------------------------------------------------ camera
 
-  function screenArea() {
+  function screenArea(bottom = camera.get('b')) {
     const w = viewport.w - SAFE.side * 2
-    const h = viewport.h - SAFE.top - SAFE.bottom
+    // The bottom inset is a spring too, so freeing up space eases the scene into it.
+    const h = viewport.h - SAFE.top - bottom
     return { w, h, cx: viewport.w / 2, cy: SAFE.top + h / 2 }
   }
 
@@ -102,9 +105,16 @@ export function useScene() {
     const list = ids === 'all' ? Object.keys(comp.nodes) : ids
     const b = bboxOf(list)
     if (!isFinite(b.x0)) return
-    const area = screenArea()
+    // Frame against where the inset is heading, not where it is mid-ease.
+    const area = screenArea(camera.springs.b.target)
     const z = Math.min(area.w / (b.x1 - b.x0 + pad * 2), area.h / (b.y1 - b.y0 + pad * 2), maxZoom)
     camera.set({ x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, lz: Math.log(z) }, now())
+    wake()
+  }
+
+  /** Moves the bottom edge of the framing area, keeping what's on screen centred in the new area. */
+  function setBottomInset(px: number) {
+    camera.set({ b: px }, now())
     wake()
   }
 
@@ -227,6 +237,7 @@ export function useScene() {
     wheel,
     pan,
     screenArea,
+    setBottomInset,
     geometry,
     onFrame,
     time: () => time,

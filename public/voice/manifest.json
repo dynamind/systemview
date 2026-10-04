@@ -1,0 +1,216 @@
+{
+ "lines": {
+  "The whole machine, as far as we’ve drawn it. Every box here exists because of something to its left.": {
+   "file": "7436c7df313e.m4a",
+   "duration": 5480
+  },
+  "Inside, the box is just more boxes. Every flow that crossed the boundary still lands somewhere; nothing appears or vanishes at the edge. And look at the loop: manure feeds the fields, the fields feed the herd. Inside the boundary it’s a resource. At the gate it’s a problem.": {
+   "file": "5e0f3fcc34d5.m4a",
+   "duration": 16891
+  },
+  "Name an undesirable and it becomes a problem. A problem invites solutions, and each one is a new box with outputs of its own. The digester transforms manure into energy, and it runs on capital. What it leaves behind: leaks, and a question mark.": {
+   "file": "6204ace28060.m4a",
+   "duration": 16208
+  },
+  "The manure branch. Two answers to one problem, each leaving different things behind.": {
+   "file": "dfecb72110ff.m4a",
+   "duration": 4682
+  },
+  "Spreading on land is cheaper. But look at what it leaves: nitrate seeps into groundwater, ammonia drifts off. Both are diffuse. It doesn’t solve the problem so much as move it past the boundary.": {
+   "file": "de044e94ba79.m4a",
+   "duration": 12213
+  },
+  "Back to the digester. Neither option is clean. The question isn’t which one has no residue, but which residue you can live with, or solve next.": {
+   "file": "db2e26883d84.m4a",
+   "duration": 8779
+  },
+  "Capital goes into the digester, to build it and to keep it tight. Whether it pays is the balance across its boundary: gas revenue out, capital in. When the balance tips, the input becomes a problem. The state can answer it with a subsidy, a rule designed as a solution: the mirror image of the cap.": {
+   "file": "fe7d342ac822.m4a",
+   "duration": 18923
+  },
+  "The digester’s balance. Capital in, gas out, and a subsidy holding up one side of the scale.": {
+   "file": "6bafae606fbc.m4a",
+   "duration": 5628
+  },
+  "The water beds: a solution that turned out to be an experiment. It failed, and the farm still came out knowing more than it did.": {
+   "file": "4fd7d35fbaa3.m4a",
+   "duration": 7107
+  },
+  "The farmer had an answer for lame cows: heated water beds. Soft, warm, surely a help. But every solution is a hypothesis, and this one comes with an output nobody can name yet.": {
+   "file": "6493b7821307.m4a",
+   "duration": 11205
+  },
+  "Then the fog condensed. The herd came down with udder infections, and the vet traced them to the beds: warm and wet is exactly where bacteria thrive. The question mark gave up one secret, and kept the rest.": {
+   "file": "d7f2ddc5c20e.m4a",
+   "duration": 12055
+  },
+  "The infections became a problem, and the cheapest solution was to undo the first one. The farmer cut the beds open and took the loss. Lame cows are back on the table, but the farm now knows something it didn’t.": {
+   "file": "7b991a3e27c9.m4a",
+   "duration": 11572
+  },
+  "Every box has an output nobody can name at design time. These are guesses, not facts, each matched to a pattern that has caught systems out before. Click one to make it a known undesirable.": {
+   "file": "caccd505ae53.m4a",
+   "duration": 10974
+  },
+  "Back to a guess. Unconfirmed, but not forgotten.": {
+   "file": "31992255bf27.m4a",
+   "duration": 2901
+  },
+  "“Efficiency gains grow the herd” is now a known undesirable, ready to become a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "568e8abae21a.m4a",
+   "duration": 10025
+  },
+  "“Bought feed replaces grassland” is now a known undesirable, ready to become a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "4ba4b728902b.m4a",
+   "duration": 9758
+  },
+  "“Routine antibiotics breed resistance” is now a known undesirable, ready to become a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "9fbc6636418f.m4a",
+   "duration": 10671
+  },
+  "Methane leaves the farm unpriced. Nothing inside this boundary makes it the farm’s problem. Something outside would have to: a rule, a price, a norm.": {
+   "file": "5bf75b06ab50.m4a",
+   "duration": 8356
+  },
+  "A rule arrives. It’s someone else’s solution, the state’s answer to warming, and here it lands as a problem, on purpose. A feed additive cuts methane at the source. It costs money per litre, and what it does long-term is still a question mark.": {
+   "file": "9e842a4c0cc8.m4a",
+   "duration": 14773
+  },
+  "The methane cap, and what it set in motion.": {
+   "file": "2d0363c770fd.m4a",
+   "duration": 2247
+  },
+  "Fewer cows meets the cap on paper. But the milk still gets drunk, so production moves abroad, and the methane goes with it. That’s leakage: the problem didn’t go away, it left the boundary. Draw the boundary wider and this solution could be worse than the problem.": {
+   "file": "bc40202b7b59.m4a",
+   "duration": 15504
+  },
+  "The additive again. It keeps the problem here, where it can at least be seen and measured.": {
+   "file": "089b640e876d.m4a",
+   "duration": 4496
+  },
+  "Runoff is diffuse. It leaves through every field at once, a little at a time. Diffuse outputs are the hardest to solve, and the easiest to leave off the map.": {
+   "file": "4261d56f8e32.m4a",
+   "duration": 8748
+  },
+  "Which part? Name it, or click it, and I’ll trace what it’s there for.": {
+   "file": "320a8c136ee2.m4a",
+   "duration": 3793
+  },
+  "This prototype follows a scripted story, so I only understand a little. Try a suggestion below, or click anything on the canvas.": {
+   "file": "39b883cf5a65.m4a",
+   "duration": 6639
+  },
+  "A dairy farm, as a black box. Things go in, things come out. Some are wanted, some aren’t, and some of them we can’t name yet.": {
+   "file": "2094e130c67b.m4a",
+   "duration": 8183
+  },
+  "Follow any box back and you reach the reason it exists. Cutting the beds open answers the infections, which answer the beds, which answer lame cows, which answer the farm’s purpose: a living from milk.": {
+   "file": "cb58507cabba.m4a",
+   "duration": 11115
+  },
+  "Each part of this machine can answer one question: what are you here for? And each answer leaves something behind. That residue is the next problem.": {
+   "file": "d96f02555fa3.m4a",
+   "duration": 8149
+  },
+  "The farm turns grass, feed and care into milk. Everything else on this canvas exists because of that.": {
+   "file": "6e9e9c6e0dcb.m4a",
+   "duration": 6115
+  },
+  "Feeding mixes bought feed with the farm’s own grass, so the herd eats what the land can’t fully provide.": {
+   "file": "8ce38c3b1906.m4a",
+   "duration": 5911
+  },
+  "Young stock replaces cows that leave the herd. Genetics come in here, and pay off years later.": {
+   "file": "995e7d35c62f.m4a",
+   "duration": 5775
+  },
+  "The herd is the conversion engine: feed and water in, milk, calves, manure and methane out.": {
+   "file": "f45f6099c9ed.m4a",
+   "duration": 6422
+  },
+  "Milking turns a cow’s output into a product someone will buy. It is the narrowest gate of the farm.": {
+   "file": "e4ea5e4f4227.m4a",
+   "duration": 6187
+  },
+  "Storage holds manure until the fields can take it. It’s a “contain” solution, and it’s been around so long nobody thinks of it as one.": {
+   "file": "a3353fd234e8.m4a",
+   "duration": 7413
+  },
+  "The fields close the loop: manure in, grass out. They also leak whatever they can’t hold.": {
+   "file": "9f7c28f7a924.m4a",
+   "duration": 5701
+  },
+  "Manure isn’t a problem by nature; the fields want it. It becomes one when there’s more of it than the land can absorb.": {
+   "file": "6a6ef7e448ed.m4a",
+   "duration": 6717
+  },
+  "The digester turns surplus manure into energy and a fertiliser that’s easier to handle. It costs capital to build and to keep tight.": {
+   "file": "16f6fb09c3c5.m4a",
+   "duration": 7138
+  },
+  "Spreading moves manure off the farm’s books and into the soil. What the soil can’t hold moves on, into groundwater and air.": {
+   "file": "94651d1a102e.m4a",
+   "duration": 7405
+  },
+  "Capital goes into the digester; it isn’t something the digester leaves behind. Every input a solution needs raises its own question: where does it come from?": {
+   "file": "15e85a779687.m4a",
+   "duration": 8890
+  },
+  "Whether the digester pays is the balance across its boundary: capital and upkeep in, gas revenue out. When the balance tips the wrong way, the input becomes a problem.": {
+   "file": "fb7f0d37adda.m4a",
+   "duration": 9222
+  },
+  "The subsidy is a rule designed as a solution: the state pays part of the bill because it wants the methane captured. It’s the mirror image of the cap.": {
+   "file": "e442758e151f.m4a",
+   "duration": 8253
+  },
+  "The cap is someone else’s solution. For the state it answers warming; for the farm it is a new problem, created on purpose.": {
+   "file": "b453a5dbb5a3.m4a",
+   "duration": 7495
+  },
+  "Methane was always leaving the farm. The cap is what makes it this farm’s problem.": {
+   "file": "cc97e107f2b6.m4a",
+   "duration": 4587
+  },
+  "The additive suppresses methane in the rumen, at the source. It works today; what it does over a cow’s lifetime is still a question mark.": {
+   "file": "baf760bbba63.m4a",
+   "duration": 7721
+  },
+  "Fewer cows meets the cap on paper. The milk is still drunk somewhere, so production and its methane move abroad.": {
+   "file": "9b3603bfb625.m4a",
+   "duration": 6732
+  },
+  "Cows that lie badly stand too long, and their legs pay for it. Lameness costs milk and makes cows suffer.": {
+   "file": "85ad486a9512.m4a",
+   "duration": 7188
+  },
+  "The farmer chose heated water beds, believing they would help: soft and warm, so cows lie longer and their legs recover. A clear purpose, and an untested one.": {
+   "file": "514cc7da59ce.m4a",
+   "duration": 9572
+  },
+  "Warm and wet is exactly where bacteria thrive. Nobody named this output at design time; the herd showed it, and the vet traced it back to the beds.": {
+   "file": "0158b901f772.m4a",
+   "duration": 8598
+  },
+  "An output nobody could name became one nobody could ignore.": {
+   "file": "55c096448125.m4a",
+   "duration": 2765
+  },
+  "Sometimes the best solution to a problem is to undo the solution that caused it. The farmer cut every bed open and took the loss.": {
+   "file": "e7bc12dcc80f.m4a",
+   "duration": 6835
+  },
+  "If each cow gets cheaper to keep, the rational move is more cows. Total manure and methane rise even as each cow improves.": {
+   "file": "f0d76d59c63a.m4a",
+   "duration": 7051
+  },
+  "Imported feed is easier than growing grass. Over time the land, and the skill of farming it, wither, and the farm depends on a supply chain it can’t see.": {
+   "file": "b4dd81dc460e.m4a",
+   "duration": 8774
+  },
+  "Preventive treatment keeps the herd healthy this year and makes treatment weaker for everyone later.": {
+   "file": "7a90d1899dcf.m4a",
+   "duration": 4866
+  }
+ }
+}

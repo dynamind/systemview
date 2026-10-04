@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Narration from './components/Narration.vue'
 import SystemCanvas from './components/SystemCanvas.vue'
-import { useScene } from './scene/useScene'
+import { SAFE, SAFE_BOTTOM_NARRATING, useScene } from './scene/useScene'
 import { useStory } from './scene/useStory'
+import { setSound, sound } from './scene/voice'
 
 const scene = useScene()
 const story = useStory(scene)
 const draft = ref('')
+
+// ?render: a clean frame for recording the narrated tour (see scripts/render.mjs).
+const render = new URLSearchParams(location.search).has('render')
+const narrating = computed(() => render || story.touring.value)
+watch(narrating, (on) => scene.setBottomInset(on ? SAFE_BOTTOM_NARRATING : SAFE.bottom), { immediate: true })
+if (render) Object.assign(window, { systemview: { tour: story.tour, touring: () => story.touring.value, line: () => story.line.value } })
 
 // Flattened so every chip, relation and goal animates as its own item.
 const purposeItems = computed(() => {
@@ -40,7 +47,7 @@ function onKey(ev: KeyboardEvent) {
 
 onMounted(() => {
   window.addEventListener('keydown', onKey)
-  setTimeout(story.intro, 500)
+  if (!render) setTimeout(story.intro, 500)
 })
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
@@ -48,7 +55,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 <template>
   <SystemCanvas :scene="scene" @select="story.click" @background="story.actions.clearFocus" />
 
-  <header class="top">
+  <header class="top" :class="{ render }">
     <div class="mark">
       <span class="glyph" aria-hidden="true">◫</span>
       SystemView
@@ -61,6 +68,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
       <button class="quiet" :class="{ active: story.touring.value }" @click="story.tour()">
         {{ story.touring.value ? 'Stop narration' : 'Narrate ▸' }}
       </button>
+      <button class="quiet" :aria-pressed="sound" @click="setSound(!sound)">{{ sound ? 'Sound on' : 'Sound off' }}</button>
     </div>
   </header>
 
@@ -73,16 +81,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     </template>
   </TransitionGroup>
 
-  <div class="scrim" aria-hidden="true" />
-  <footer class="dock">
+  <div class="scrim" :class="{ narrating }" aria-hidden="true" />
+  <footer class="dock" :class="{ narrating }">
     <Narration :line="story.line.value" :echo="story.echo.value" />
-    <form class="prompt" @submit.prevent="submit">
-      <input ref="input" v-model="draft" placeholder="Ask about the system, or describe a change…" spellcheck="false" />
-      <span class="tag">scripted</span>
-    </form>
-    <TransitionGroup tag="div" name="chip" class="suggestions">
-      <button v-for="s in story.suggestions.value" :key="s.label" class="schip" @click="s.run">{{ s.label }}</button>
-    </TransitionGroup>
+    <div class="interact" :inert="narrating">
+      <div class="inner">
+        <form class="prompt" @submit.prevent="submit">
+          <input ref="input" v-model="draft" placeholder="Ask about the system, or describe a change…" spellcheck="false" />
+          <span class="tag">scripted</span>
+        </form>
+        <TransitionGroup tag="div" name="chip" class="suggestions">
+          <button v-for="s in story.suggestions.value" :key="s.label" class="schip" @click="s.run">{{ s.label }}</button>
+        </TransitionGroup>
+      </div>
+    </div>
   </footer>
 
   <aside class="legend" aria-label="Legend">
@@ -109,6 +121,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 .top > * {
   pointer-events: auto;
+}
+.top.render .controls {
+  display: none;
 }
 .mark {
   font: 600 13px/1 var(--sans);
@@ -192,12 +207,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   bottom: 0;
   height: 300px;
   pointer-events: none;
+  transition: height 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--paper) 0%, transparent),
     color-mix(in srgb, var(--paper) 88%, transparent) 38%,
     var(--paper) 70%
   );
+}
+.scrim.narrating {
+  height: 190px;
 }
 .dock {
   position: fixed;
@@ -208,6 +227,28 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+/* While narrating, the prompt and suggestions fold away and the narration settles to the bottom. */
+.interact {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.3s ease 0.1s;
+}
+.interact > .inner {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Room for the prompt's shadow inside the clipping box. */
+  padding: 0 0 6px;
+  margin: 0 0 -6px;
+}
+.dock.narrating .interact {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.2s ease;
 }
 .prompt {
   position: relative;
