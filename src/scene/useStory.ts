@@ -35,9 +35,10 @@ export function useStory(scene: Scene) {
   let lastBranch: 'manure' | 'cap' | 'beds' = 'manure'
   let tourToken = 0
 
-  const say = (text: string) => {
+  const say = (text: string, spoken = true) => {
     line.value = { key: line.value.key + 1, text, voice: 'system' }
-    if (touring.value) voice.play(text)
+    if (spoken) voice.play(text)
+    else voice.stop()
   }
 
   function settle(view: string[] | 'all', pad?: number, max?: number) {
@@ -239,10 +240,9 @@ export function useStory(scene: Scene) {
         break
     }
     if (n.kind === 'hypothesis') return actions.promote(id)
-    if (n.kind === 'solution') {
-      const chosen = id === state.manureChoice || id === state.capChoice
-      if (!chosen) return id === 'digester' || id === 'spread' ? actions.swapManure() : actions.swapCap()
-    }
+    // Clicking the alternative that isn't shown swaps it in; other solutions just explain themselves.
+    if ((id === 'digester' || id === 'spread') && id !== state.manureChoice) return actions.swapManure()
+    if ((id === 'additive' || id === 'fewer') && id !== state.capChoice) return actions.swapCap()
     actions.why(id)
   }
 
@@ -289,6 +289,16 @@ export function useStory(scene: Scene) {
   const suggestions = computed(() => {
     const s: { label: string; run: () => void }[] = []
     const add = (label: string, run: () => void) => s.push({ label, run: () => (stopTour(), run()) })
+    // Whatever was just clicked, the way on: trace it back to what it serves.
+    const focus = state.focus ? NODES[state.focus] : undefined
+    const up = focus?.parent ? NODES[focus.parent] : undefined
+    if (up && up.label !== '?' && scene.composition().nodes[up.id]) {
+      const name = `“${up.label.toLowerCase()}”`
+      const ask =
+        up.kind === 'problem' ? `Why is ${name} a problem?` : up.kind === 'solution' || up.kind === 'system' ? `What is ${name} for?` : `Where does ${name} come from?`
+      add(ask, () => actions.why(up.id))
+    }
+
     if (state.zoom === 'root') add('What’s inside?', actions.open)
     else add('Step back out', actions.overview)
 
@@ -309,7 +319,7 @@ export function useStory(scene: Scene) {
 
     const chosen =
       lastBranch === 'cap' && state.cap ? state.capChoice : lastBranch === 'manure' && state.manure ? state.manureChoice : lastBranch === 'beds' && state.beds ? 'beds' : null
-    if (chosen && state.focus !== chosen) add(`Why does “${NODES[chosen].label.toLowerCase()}” exist?`, () => actions.why(chosen))
+    if (chosen && state.focus !== chosen && up?.id !== chosen) add(`Why does “${NODES[chosen].label.toLowerCase()}” exist?`, () => actions.why(chosen))
     if (state.zoom === 'root' && (state.manure || state.cap || state.fog || state.beds)) add('Show the whole', actions.overview)
     return s.slice(0, 4)
   })
@@ -368,13 +378,22 @@ export function useStory(scene: Scene) {
   }
 
   function stopTour() {
+    if (!touring.value) return
     tourToken++
     touring.value = false
     voice.stop()
   }
 
+  // Empty canvas: inside the farm it's the way back out; elsewhere it just lets go of the focus.
+  function background() {
+    stopTour()
+    if (state.zoom === 'farm') actions.overview()
+    else actions.clearFocus()
+  }
+
+  // Silent: it greets on page load, before anyone asked for sound.
   function intro() {
-    say(INTRO)
+    say(INTRO, false)
   }
 
   const purposePath = computed(() => {
@@ -382,7 +401,7 @@ export function useStory(scene: Scene) {
     return lineage(state.focus).map((id) => ({ id, label: NODES[id].label, relation: NODES[id].relation, kind: NODES[id].kind }))
   })
 
-  return { line, echo, ask, click, suggestions, tour, touring, stopTour, intro, actions, purposePath }
+  return { line, echo, ask, click, background, suggestions, tour, touring, stopTour, intro, actions, purposePath }
 }
 
 export type Story = ReturnType<typeof useStory>

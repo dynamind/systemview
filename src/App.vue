@@ -53,7 +53,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <template>
-  <SystemCanvas :scene="scene" @select="story.click" @background="story.actions.clearFocus" />
+  <SystemCanvas :scene="scene" @select="story.click" @background="story.background" />
 
   <header class="top" :class="{ render }">
     <div class="mark">

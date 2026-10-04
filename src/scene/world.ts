@@ -99,8 +99,8 @@ const nodes: NodeDef[] = [
   { id: 'services', kind: 'source', label: 'Vet & contractors' },
 
   // Outputs
-  { id: 'milk', kind: 'sink', label: 'Milk', valence: 'desired', parent: 'farm', relation: 'output of' },
-  { id: 'beef', kind: 'sink', label: 'Beef & calves', valence: 'desired', parent: 'farm', relation: 'output of' },
+  { id: 'milk', kind: 'sink', label: 'Milk', valence: 'desired', parent: 'farm', relation: 'output of', why: 'Milk is the reason the farm exists. Every other box on this canvas is either feeding it, or cleaning up after it.' },
+  { id: 'beef', kind: 'sink', label: 'Beef & calves', valence: 'desired', parent: 'farm', relation: 'output of', why: 'A cow has to calve to give milk, so every litre comes with a calf attached. Beef is the by-product that pays.' },
   { id: 'manure', kind: 'sink', label: 'Manure', valence: 'undesired', parent: 'farm', relation: 'output of' },
   { id: 'methane', kind: 'sink', label: 'Methane', valence: 'undesired', parent: 'farm', relation: 'output of' },
   { id: 'runoff', kind: 'sink', label: 'Nitrogen runoff', valence: 'undesired', diffuse: true, parent: 'farm', relation: 'output of' },
@@ -142,7 +142,7 @@ const nodes: NodeDef[] = [
     relation: 'solves',
     why: 'Spreading moves manure off the farm’s books and into the soil. What the soil can’t hold moves on, into groundwater and air.',
   },
-  { id: 'biogas', kind: 'sink', label: 'Biogas', note: 'sold as energy', valence: 'desired', parent: 'digester', relation: 'output of' },
+  { id: 'biogas', kind: 'sink', label: 'Biogas', note: 'sold as energy', valence: 'desired', parent: 'digester', relation: 'output of', why: 'Biogas is the digester’s purpose made visible: manure that was a problem leaves as energy someone will pay for.' },
   {
     id: 'capital',
     kind: 'source',
@@ -170,19 +170,19 @@ const nodes: NodeDef[] = [
     relation: 'solves',
     why: 'The subsidy is a rule designed as a solution: the state pays part of the bill because it wants the methane captured. It’s the mirror image of the cap.',
   },
-  { id: 'paysOff', kind: 'sink', label: 'Digester pays off', valence: 'desired', parent: 'subsidy', relation: 'output of' },
-  { id: 'policy', kind: 'sink', label: 'Depends on policy', note: 'until the next election', valence: 'undesired', parent: 'subsidy', relation: 'output of' },
-  { id: 'subUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'subsidy', relation: 'output of' },
-  { id: 'digestate', kind: 'sink', label: 'Digestate', valence: 'desired', parent: 'digester', relation: 'output of' },
-  { id: 'leaks', kind: 'sink', label: 'Methane leaks', valence: 'undesired', parent: 'digester', relation: 'output of' },
-  { id: 'dUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'digester', relation: 'output of' },
-  { id: 'soil', kind: 'sink', label: 'Soil nutrients', valence: 'desired', parent: 'spread', relation: 'output of' },
-  { id: 'nitrate', kind: 'sink', label: 'Nitrate to groundwater', note: 'diffuse', valence: 'undesired', diffuse: true, parent: 'spread', relation: 'output of' },
-  { id: 'ammonia', kind: 'sink', label: 'Ammonia to air', note: 'diffuse', valence: 'undesired', diffuse: true, parent: 'spread', relation: 'output of' },
-  { id: 'sUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'spread', relation: 'output of' },
+  { id: 'paysOff', kind: 'sink', label: 'Digester pays off', valence: 'desired', parent: 'subsidy', relation: 'output of', why: 'With the subsidy, the balance tips the right way and the digester earns its keep. On paper, the problem is solved.' },
+  { id: 'policy', kind: 'sink', label: 'Depends on policy', note: 'until the next election', valence: 'undesired', parent: 'subsidy', relation: 'output of', why: 'The subsidy solves a money problem by borrowing someone else’s decision. When the policy changes, the problem comes back, and the digester is already built.' },
+  { id: 'subUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'subsidy', relation: 'output of', why: 'A subsidy changes behaviour beyond its target. Who else builds a digester, just because the money is there? Nobody knows yet.' },
+  { id: 'digestate', kind: 'sink', label: 'Digestate', valence: 'desired', parent: 'digester', relation: 'output of', why: 'Digestate is what’s left after digestion: the nutrients without most of the smell, easier to dose on the fields. The loop to the land stays intact.' },
+  { id: 'leaks', kind: 'sink', label: 'Methane leaks', valence: 'undesired', parent: 'digester', relation: 'output of', why: 'No digester is perfectly tight. A little methane escapes from every seal, so a solution built to capture methane releases some of its own.' },
+  { id: 'dUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'digester', relation: 'output of', why: 'Even a well-understood machine leaves room for surprise. The question mark stays, because no design names every output.' },
+  { id: 'soil', kind: 'sink', label: 'Soil nutrients', valence: 'desired', parent: 'spread', relation: 'output of', why: 'Spread at the right time and rate, manure feeds the soil. This is the loop the fields were made for.' },
+  { id: 'nitrate', kind: 'sink', label: 'Nitrate to groundwater', note: 'diffuse', valence: 'undesired', diffuse: true, parent: 'spread', relation: 'output of', why: 'What the crop can’t take up washes down into the groundwater. It leaves a little at a time, from every field, and turns up years later in someone’s drinking water.' },
+  { id: 'ammonia', kind: 'sink', label: 'Ammonia to air', note: 'diffuse', valence: 'undesired', diffuse: true, parent: 'spread', relation: 'output of', why: 'Ammonia drifts off the moment manure meets the air. It comes down again on nature that can’t take the extra nitrogen.' },
+  { id: 'sUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'spread', relation: 'output of', why: 'What decades of spreading do to the soil, nobody can fully say yet. The question mark is honest about it.' },
 
   // Methane cap branch
-  { id: 'warming', kind: 'context', label: 'Climate warming' },
+  { id: 'warming', kind: 'context', label: 'Climate warming', why: 'Warming is the state’s problem, not the farm’s. Seen from here it’s background, until a rule brings it inside.' },
   {
     id: 'cap',
     kind: 'rule',
@@ -218,13 +218,13 @@ const nodes: NodeDef[] = [
     relation: 'solves',
     why: 'Fewer cows meets the cap on paper. The milk is still drunk somewhere, so production and its methane move abroad.',
   },
-  { id: 'lessCH4', kind: 'sink', label: 'Less methane', valence: 'desired', parent: 'additive', relation: 'output of' },
-  { id: 'costL', kind: 'sink', label: 'Cost per litre', valence: 'undesired', parent: 'additive', relation: 'output of' },
-  { id: 'aUnknown', kind: 'sink', label: '?', note: 'long-term effects', valence: 'unknown', parent: 'additive', relation: 'output of' },
-  { id: 'lessCH4b', kind: 'sink', label: 'Less methane here', valence: 'desired', parent: 'fewer', relation: 'output of' },
-  { id: 'income', kind: 'sink', label: 'Less milk & income', valence: 'undesired', parent: 'fewer', relation: 'output of' },
-  { id: 'leakage', kind: 'sink', label: 'Production moves abroad', note: 'diffuse', valence: 'undesired', diffuse: true, parent: 'fewer', relation: 'output of' },
-  { id: 'fUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'fewer', relation: 'output of' },
+  { id: 'lessCH4', kind: 'sink', label: 'Less methane', valence: 'desired', parent: 'additive', relation: 'output of', why: 'The additive does what it promises: less methane per cow, measured at the source. The cap is met.' },
+  { id: 'costL', kind: 'sink', label: 'Cost per litre', valence: 'undesired', parent: 'additive', relation: 'output of', why: 'The additive has to be bought every day, for every cow. Meeting the cap becomes a running cost on every litre.' },
+  { id: 'aUnknown', kind: 'sink', label: '?', note: 'long-term effects', valence: 'unknown', parent: 'additive', relation: 'output of', why: 'The additive is new. What it does to the cow, the milk or the soil over many years is still a question mark.' },
+  { id: 'lessCH4b', kind: 'sink', label: 'Less methane here', valence: 'desired', parent: 'fewer', relation: 'output of', why: 'Fewer cows, less methane. Here, at least.' },
+  { id: 'income', kind: 'sink', label: 'Less milk & income', valence: 'undesired', parent: 'fewer', relation: 'output of', why: 'Fewer cows means less milk, and less milk means less income. The cap is met by shrinking the very thing the farm exists for.' },
+  { id: 'leakage', kind: 'sink', label: 'Production moves abroad', note: 'diffuse', valence: 'undesired', diffuse: true, parent: 'fewer', relation: 'output of', why: 'Demand for milk doesn’t shrink with the herd. A farm somewhere else fills the gap, and the methane leaves from there instead.' },
+  { id: 'fUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'fewer', relation: 'output of', why: 'Shrinking a herd changes more than the numbers: the land, the work, the next generation’s choice to farm. None of it has a name yet.' },
 
   // Water beds: a solution that turned out to be an experiment
   {
@@ -246,7 +246,7 @@ const nodes: NodeDef[] = [
     relation: 'solves',
     why: 'The farmer chose heated water beds, believing they would help: soft and warm, so cows lie longer and their legs recover. A clear purpose, and an untested one.',
   },
-  { id: 'rested', kind: 'sink', label: 'Rested cows', valence: 'desired', parent: 'beds', relation: 'output of' },
+  { id: 'rested', kind: 'sink', label: 'Rested cows', valence: 'desired', parent: 'beds', relation: 'output of', why: 'The beds did what they were chosen for. Cows lay longer, and their legs recovered. The intended output arrived, as intended.' },
   {
     id: 'mastitis',
     kind: 'sink',
@@ -257,7 +257,7 @@ const nodes: NodeDef[] = [
     relation: 'output of',
     why: 'Warm and wet is exactly where bacteria thrive. Nobody named this output at design time; the herd showed it, and the vet traced it back to the beds.',
   },
-  { id: 'bUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'beds', relation: 'output of' },
+  { id: 'bUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'beds', relation: 'output of', why: 'Every solution is a hypothesis. The beds had a clear purpose, and outputs nobody had named yet. One of them has surfaced; the rest are still fog.' },
   {
     id: 'pMastitis',
     kind: 'problem',
@@ -277,9 +277,9 @@ const nodes: NodeDef[] = [
     relation: 'solves',
     why: 'Sometimes the best solution to a problem is to undo the solution that caused it. The farmer cut every bed open and took the loss.',
   },
-  { id: 'losses', kind: 'sink', label: 'Losses accepted', valence: 'undesired', parent: 'cutOpen', relation: 'output of' },
-  { id: 'lesson', kind: 'sink', label: 'Lesson learned', note: 'warm + wet breeds bacteria', valence: 'desired', parent: 'cutOpen', relation: 'output of' },
-  { id: 'cUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'cutOpen', relation: 'output of' },
+  { id: 'losses', kind: 'sink', label: 'Losses accepted', valence: 'undesired', parent: 'cutOpen', relation: 'output of', why: 'The beds were paid for, and now they’re gone. Accepting the loss is part of the solution: the money won’t come back, but the infections stop.' },
+  { id: 'lesson', kind: 'sink', label: 'Lesson learned', note: 'warm + wet breeds bacteria', valence: 'desired', parent: 'cutOpen', relation: 'output of', why: 'The experiment failed, and the farm knows something it didn’t: warm and wet breeds bacteria. That knowledge is an output too, and it will shape the next solution.' },
+  { id: 'cUnknown', kind: 'sink', label: '?', valence: 'unknown', parent: 'cutOpen', relation: 'output of', why: 'Undoing a solution is a solution too, with outputs of its own. Where cutting the beds open leads, nobody can say yet.' },
 
   // Fog: hypotheses about unknown undesirables
   {

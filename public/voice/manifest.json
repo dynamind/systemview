@@ -116,6 +116,14 @@
    "file": "6e9e9c6e0dcb.m4a",
    "duration": 6115
   },
+  "Milk is the reason the farm exists. Every other box on this canvas is either feeding it, or cleaning up after it.": {
+   "file": "f89a29848dcf.m4a",
+   "duration": 6015
+  },
+  "A cow has to calve to give milk, so every litre comes with a calf attached. Beef is the by-product that pays.": {
+   "file": "00c87147cbe9.m4a",
+   "duration": 7177
+  },
   "Feeding mixes bought feed with the farm’s own grass, so the herd eats what the land can’t fully provide.": {
    "file": "8ce38c3b1906.m4a",
    "duration": 5911
@@ -152,6 +160,10 @@
    "file": "94651d1a102e.m4a",
    "duration": 7405
   },
+  "Biogas is the digester’s purpose made visible: manure that was a problem leaves as energy someone will pay for.": {
+   "file": "4a338c09c5bb.m4a",
+   "duration": 6206
+  },
   "Capital goes into the digester; it isn’t something the digester leaves behind. Every input a solution needs raises its own question: where does it come from?": {
    "file": "15e85a779687.m4a",
    "duration": 8890
@@ -163,6 +175,50 @@
   "The subsidy is a rule designed as a solution: the state pays part of the bill because it wants the methane captured. It’s the mirror image of the cap.": {
    "file": "e442758e151f.m4a",
    "duration": 8253
+  },
+  "With the subsidy, the balance tips the right way and the digester earns its keep. On paper, the problem is solved.": {
+   "file": "572a730a47d3.m4a",
+   "duration": 6246
+  },
+  "The subsidy solves a money problem by borrowing someone else’s decision. When the policy changes, the problem comes back, and the digester is already built.": {
+   "file": "96366c555388.m4a",
+   "duration": 8345
+  },
+  "A subsidy changes behaviour beyond its target. Who else builds a digester, just because the money is there? Nobody knows yet.": {
+   "file": "8134d0b37641.m4a",
+   "duration": 6461
+  },
+  "Digestate is what’s left after digestion: the nutrients without most of the smell, easier to dose on the fields. The loop to the land stays intact.": {
+   "file": "67f29e0dc0f8.m4a",
+   "duration": 8276
+  },
+  "No digester is perfectly tight. A little methane escapes from every seal, so a solution built to capture methane releases some of its own.": {
+   "file": "b506afbee62f.m4a",
+   "duration": 8297
+  },
+  "Even a well-understood machine leaves room for surprise. The question mark stays, because no design names every output.": {
+   "file": "98e62376cd92.m4a",
+   "duration": 6755
+  },
+  "Spread at the right time and rate, manure feeds the soil. This is the loop the fields were made for.": {
+   "file": "336a888fd399.m4a",
+   "duration": 5935
+  },
+  "What the crop can’t take up washes down into the groundwater. It leaves a little at a time, from every field, and turns up years later in someone’s drinking water.": {
+   "file": "f42a1e8957bf.m4a",
+   "duration": 10343
+  },
+  "Ammonia drifts off the moment manure meets the air. It comes down again on nature that can’t take the extra nitrogen.": {
+   "file": "4aac77adb4d8.m4a",
+   "duration": 7124
+  },
+  "What decades of spreading do to the soil, nobody can fully say yet. The question mark is honest about it.": {
+   "file": "b80ae0b2f33d.m4a",
+   "duration": 5968
+  },
+  "Warming is the state’s problem, not the farm’s. Seen from here it’s background, until a rule brings it inside.": {
+   "file": "9f11d66c357a.m4a",
+   "duration": 6507
   },
   "The cap is someone else’s solution. For the state it answers warming; for the farm it is a new problem, created on purpose.": {
    "file": "b453a5dbb5a3.m4a",
@@ -180,6 +236,34 @@
    "file": "9b3603bfb625.m4a",
    "duration": 6732
   },
+  "The additive does what it promises: less methane per cow, measured at the source. The cap is met.": {
+   "file": "5c2f5759748b.m4a",
+   "duration": 5282
+  },
+  "The additive has to be bought every day, for every cow. Meeting the cap becomes a running cost on every litre.": {
+   "file": "ab5b1e3908ff.m4a",
+   "duration": 6225
+  },
+  "The additive is new. What it does to the cow, the milk or the soil over many years is still a question mark.": {
+   "file": "7d6df00928c1.m4a",
+   "duration": 6078
+  },
+  "Fewer cows, less methane. Here, at least.": {
+   "file": "52a359c5b087.m4a",
+   "duration": 2851
+  },
+  "Fewer cows means less milk, and less milk means less income. The cap is met by shrinking the very thing the farm exists for.": {
+   "file": "a39823b86f13.m4a",
+   "duration": 7088
+  },
+  "Demand for milk doesn’t shrink with the herd. A farm somewhere else fills the gap, and the methane leaves from there instead.": {
+   "file": "7c7c199a88bf.m4a",
+   "duration": 6573
+  },
+  "Shrinking a herd changes more than the numbers: the land, the work, the next generation’s choice to farm. None of it has a name yet.": {
+   "file": "d312e02379b8.m4a",
+   "duration": 8582
+  },
   "Cows that lie badly stand too long, and their legs pay for it. Lameness costs milk and makes cows suffer.": {
    "file": "85ad486a9512.m4a",
    "duration": 7188
@@ -188,9 +272,17 @@
    "file": "514cc7da59ce.m4a",
    "duration": 9572
   },
+  "The beds did what they were chosen for. Cows lay longer, and their legs recovered. The intended output arrived, as intended.": {
+   "file": "5fc115ab43a4.m4a",
+   "duration": 7186
+  },
   "Warm and wet is exactly where bacteria thrive. Nobody named this output at design time; the herd showed it, and the vet traced it back to the beds.": {
    "file": "0158b901f772.m4a",
    "duration": 8598
+  },
+  "Every solution is a hypothesis. The beds had a clear purpose, and outputs nobody had named yet. One of them has surfaced; the rest are still fog.": {
+   "file": "87310639f693.m4a",
+   "duration": 8216
   },
   "An output nobody could name became one nobody could ignore.": {
    "file": "55c096448125.m4a",
@@ -199,6 +291,18 @@
   "Sometimes the best solution to a problem is to undo the solution that caused it. The farmer cut every bed open and took the loss.": {
    "file": "e7bc12dcc80f.m4a",
    "duration": 6835
+  },
+  "The beds were paid for, and now they’re gone. Accepting the loss is part of the solution: the money won’t come back, but the infections stop.": {
+   "file": "820c1e26fb6b.m4a",
+   "duration": 8227
+  },
+  "The experiment failed, and the farm knows something it didn’t: warm and wet breeds bacteria. That knowledge is an output too, and it will shape the next solution.": {
+   "file": "8dd980cd0ce5.m4a",
+   "duration": 8754
+  },
+  "Undoing a solution is a solution too, with outputs of its own. Where cutting the beds open leads, nobody can say yet.": {
+   "file": "7d4ffbcbcf3d.m4a",
+   "duration": 7241
   },
   "If each cow gets cheaper to keep, the rational move is more cows. Total manure and methane rise even as each cow improves.": {
    "file": "f0d76d59c63a.m4a",

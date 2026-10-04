@@ -79,10 +79,11 @@ const nodeOpacity = (n: RNode) => n.o * (1 - 0.8 * n.d) * (n.def.kind === 'solut
 // ------------------------------------------------------------ input
 
 const dragging = ref(false)
-let down: { x: number; y: number; moved: boolean } | null = null
+// The node a press started on: once the pointer is captured, pointerup targets the canvas itself.
+let down: { x: number; y: number; moved: boolean; id: string | null } | null = null
 
 function onPointerDown(ev: PointerEvent) {
-  down = { x: ev.clientX, y: ev.clientY, moved: false }
+  down = { x: ev.clientX, y: ev.clientY, moved: false, id: (ev.target as Element).closest('[data-node]')?.getAttribute('data-node') ?? null }
   ;(ev.currentTarget as Element).setPointerCapture(ev.pointerId)
 }
 function onPointerMove(ev: PointerEvent) {
@@ -96,14 +97,12 @@ function onPointerMove(ev: PointerEvent) {
   down.x = ev.clientX
   down.y = ev.clientY
 }
-function onPointerUp(ev: PointerEvent) {
-  const wasDrag = down?.moved
+function onPointerUp() {
+  const press = down
   down = null
   dragging.value = false
-  if (wasDrag) return
-  const target = (ev.target as Element).closest('[data-node]')
-  const id = target?.getAttribute('data-node')
-  if (id) emit('select', id)
+  if (!press || press.moved) return
+  if (press.id) emit('select', press.id)
   else emit('background')
 }
 // Scroll pans, pinch (reported as ctrl+wheel) or ⌘/Ctrl+scroll zooms.
@@ -274,7 +273,11 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || id === 'capital
             class="box solution-box"
             :class="{ 'rule-box': n.def.byRule }"
           />
-          <rect v-if="n.def.byRule" :x="-n.w / 2" :y="-n.h / 2" :width="3" :height="n.h" class="rule-bar" />
+          <template v-if="n.def.byRule">
+            <!-- The bar follows the box's rounded corners instead of poking out past them -->
+            <clipPath :id="`bar-${n.id}`"><rect :x="-n.w / 2" :y="-n.h / 2" :width="n.w" :height="n.h" rx="8" /></clipPath>
+            <rect :x="-n.w / 2" :y="-n.h / 2" :width="3.5" :height="n.h" class="rule-bar" :clip-path="`url(#bar-${n.id})`" />
+          </template>
           <text :y="-n.h / 2 - 7" font-size="7.5" class="caps" :class="n.def.byRule ? 'rule' : n.r > 0.5 ? 'undesired' : 'muted'" text-anchor="middle">
             {{ caption(n) }}
           </text>
@@ -309,7 +312,8 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || id === 'capital
 
         <template v-else-if="n.def.kind === 'rule'">
           <rect :x="-n.w / 2" :y="-n.h / 2" :width="n.w" :height="n.h" rx="3" class="box rule-box" />
-          <rect :x="-n.w / 2" :y="-n.h / 2" :width="3" :height="n.h" class="rule-bar" />
+          <clipPath :id="`bar-${n.id}`"><rect :x="-n.w / 2" :y="-n.h / 2" :width="n.w" :height="n.h" rx="3" /></clipPath>
+          <rect :x="-n.w / 2" :y="-n.h / 2" :width="3" :height="n.h" class="rule-bar" :clip-path="`url(#bar-${n.id})`" />
           <text :y="-n.h / 2 - 7" font-size="7.5" class="caps rule" text-anchor="middle">rule · problem by design</text>
           <text :font-size="FONT.box" class="label rule" text-anchor="middle" dominant-baseline="central">§ {{ n.def.label }}</text>
         </template>
