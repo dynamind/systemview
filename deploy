@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-#!/bin/zsh
+set -euo pipefail
 USER=dynamind
 HOST=play.crv4all.dev
 
 npm run build
-scp -r ./dist/* $USER@$HOST:/home/$USER/docker/playground/systemview/
+# Only files whose contents changed travel (-c: the build rewrites every file, so
+# timestamps say nothing). --delete drops old bundles and clips no line uses.
+rsync -rzc --delete ./dist/ $USER@$HOST:/home/$USER/docker/playground/systemview/

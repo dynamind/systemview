@@ -185,13 +185,6 @@ export function useStory(scene: Scene) {
       )
     },
 
-    runoff() {
-      state.focus = 'runoff'
-      say(
-        'Runoff is diffuse. It leaves through every field at once, a little at a time. Diffuse outputs are the hardest to solve, and the easiest to leave off the map.',
-      )
-    },
-
     why(id: string, text?: string) {
       const n = NODES[id]
       if (!n) return
@@ -226,8 +219,6 @@ export function useStory(scene: Scene) {
         return actions.methane()
       case 'unknown':
         return actions.fog()
-      case 'runoff':
-        return actions.runoff()
       case 'cap':
         return actions.why('cap')
       case 'capital':
@@ -280,7 +271,7 @@ export function useStory(scene: Scene) {
       return actions.fog()
     }
     if (has(/methane|emission|climate/)) return actions.methane()
-    if (has(/runoff|nitrogen|nitrate|water quality/)) return actions.runoff()
+    if (has(/runoff|nitrogen|nitrate|water quality/)) return actions.why('runoff')
     const id = findMentioned(text)
     if (id) return actions.why(id)
     say('This prototype follows a scripted story, so I only understand a little. Try a suggestion below, or click anything on the canvas.')
