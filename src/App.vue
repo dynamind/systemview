@@ -30,6 +30,11 @@ const purposeItems = computed(() => {
 })
 const input = ref<HTMLInputElement>()
 
+const goTo = (id: string) => {
+  const w = WORLD_LINKS.find((l) => l.id === id)
+  if (w) location.href = w.href
+}
+
 function submit() {
   story.ask(draft.value)
   draft.value = ''
@@ -59,11 +64,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   <header class="top" :class="{ render }">
     <div class="mark">
       <span class="glyph" aria-hidden="true">◫</span>
-      SystemView
+      <span class="name">SystemView</span>
       <span class="crumb">/</span>
       <nav class="worlds" aria-label="Worlds">
         <a v-for="w in WORLD_LINKS" :key="w.id" :href="w.href" :class="{ active: w.id === domain.id }">{{ w.title }}</a>
       </nav>
+      <!-- At phone width the worlds fold into one switcher -->
+      <select class="switcher" aria-label="World" :value="domain.id" @change="goTo(($event.target as HTMLSelectElement).value)">
+        <option v-for="w in WORLD_LINKS" :key="w.id" :value="w.id">{{ w.title }}</option>
+      </select>
       <Transition name="fade">
         <span v-if="scene.state.zoom === 'inside'" class="crumb">/ inside</span>
       </Transition>
@@ -71,9 +80,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     <div class="controls">
       <button class="quiet" @click="story.actions.overview()">Overview</button>
       <button class="quiet" :class="{ active: story.touring.value }" @click="story.tour()">
-        {{ story.touring.value ? 'Stop narration' : 'Narrate ▸' }}
+        {{ story.touring.value ? 'Stop' : 'Narrate' }}<span class="wide">{{ story.touring.value ? ' narration' : ' ▸' }}</span>
       </button>
-      <button class="quiet" :aria-pressed="sound" @click="setSound(!sound)">{{ sound ? 'Sound on' : 'Sound off' }}</button>
+      <button class="quiet" :aria-pressed="sound" @click="setSound(!sound)">
+        <span class="wide">{{ sound ? 'Sound on' : 'Sound off' }}</span><span class="narrow">{{ sound ? 'Sound' : 'Muted' }}</span>
+      </button>
     </div>
   </header>
 
@@ -360,6 +371,46 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
 @media (max-width: 900px) {
   .legend { display: none; }
+}
+.switcher,
+.narrow {
+  display: none;
+}
+@media (max-width: 640px) {
+  .top {
+    padding: 12px 12px 12px 16px;
+  }
+  .name,
+  .crumb,
+  .worlds,
+  .wide {
+    display: none;
+  }
+  .narrow {
+    display: inline;
+  }
+  .switcher {
+    display: block;
+    field-sizing: content;
+    min-width: 0;
+    max-width: 46vw;
+    font: 600 13px/1 var(--sans);
+    color: var(--ink);
+    background: none;
+    border: 0;
+    padding: 6px 2px;
+    text-overflow: ellipsis;
+  }
+  .controls {
+    gap: 0;
+  }
+  .quiet {
+    padding: 8px 8px;
+    white-space: nowrap;
+  }
+  .purpose {
+    top: 48px;
+  }
 }
 
 .chip-enter-active {

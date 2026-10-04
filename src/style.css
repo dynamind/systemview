@@ -46,6 +46,8 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  /* The canvas zooms itself; the page never should. */
+  touch-action: pan-x pan-y;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);

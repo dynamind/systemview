@@ -81,12 +81,40 @@ const nodeOpacity = (n: RNode) => n.o * (1 - 0.8 * n.d) * (n.def.kind === 'solut
 const dragging = ref(false)
 // The node a press started on: once the pointer is captured, pointerup targets the canvas itself.
 let down: { x: number; y: number; moved: boolean; id: string | null } | null = null
+// Fingers on the glass; two of them pinch.
+const touches = new Map<number, { x: number; y: number }>()
+let pinch: { d: number; x: number; y: number } | null = null
+
+function twoFingers() {
+  const [a, b] = [...touches.values()]
+  return { d: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+}
 
 function onPointerDown(ev: PointerEvent) {
-  down = { x: ev.clientX, y: ev.clientY, moved: false, id: (ev.target as Element).closest('[data-node]')?.getAttribute('data-node') ?? null }
   ;(ev.currentTarget as Element).setPointerCapture(ev.pointerId)
+  if (ev.pointerType === 'touch') {
+    touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY })
+    if (touches.size === 2) {
+      // A pinch is never a click.
+      pinch = twoFingers()
+      down = null
+      dragging.value = true
+      return
+    }
+    if (touches.size > 2) return
+  }
+  down = { x: ev.clientX, y: ev.clientY, moved: false, id: (ev.target as Element).closest('[data-node]')?.getAttribute('data-node') ?? null }
 }
 function onPointerMove(ev: PointerEvent) {
+  if (touches.has(ev.pointerId)) touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY })
+  if (pinch) {
+    if (touches.size < 2) return
+    const now = twoFingers()
+    sc.pan(now.x - pinch.x, now.y - pinch.y)
+    if (pinch.d > 0 && now.d > 0) sc.wheel(now.x, now.y, -Math.log(now.d / pinch.d) / 0.0016)
+    pinch = now
+    return
+  }
   if (!down) return
   const dx = ev.clientX - down.x
   const dy = ev.clientY - down.y
@@ -97,11 +125,20 @@ function onPointerMove(ev: PointerEvent) {
   down.x = ev.clientX
   down.y = ev.clientY
 }
-function onPointerUp() {
+function onPointerUp(ev: PointerEvent) {
+  touches.delete(ev.pointerId)
+  if (pinch) {
+    // The pinch ends when the last finger lifts; a finger left behind doesn't start a pan.
+    if (touches.size === 0) {
+      pinch = null
+      dragging.value = false
+    }
+    return
+  }
   const press = down
   down = null
   dragging.value = false
-  if (!press || press.moved) return
+  if (!press || press.moved || ev.type === 'pointercancel') return
   if (press.id) emit('select', press.id)
   else emit('background')
 }
@@ -149,6 +186,7 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
     @pointerdown="onPointerDown"
     @pointermove="onPointerMove"
     @pointerup="onPointerUp"
+    @pointercancel="onPointerUp"
     @wheel="onWheel"
   >
     <g ref="world">
