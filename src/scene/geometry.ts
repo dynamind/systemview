@@ -93,13 +93,15 @@ export function layoutEdges(edges: EdgeDef[], rect: (id: string) => Rect | undef
     const ra = rect(e.from)
     const rb = rect(e.to)
     if (!ra || !rb) continue
-    const p0 = e.viaFrom
+    let p0 = e.viaFrom
       ? ports.get(`${e.viaFrom}|to`)
       : isBox(e.from)
         ? ports.get(`${e.id}|from`)
         : pointAnchor(e.from, ra, true)
     let p1 = e.viaTo ? ports.get(`${e.viaTo}|from`) : isBox(e.to) ? ports.get(`${e.id}|to`) : pointAnchor(e.to, rb, false)
     if (!p0 || !p1) continue
+    // A rung's link up starts above the caption that sits over it.
+    if (e.kind === 'serves' && sideOf(e, 'from') === 'top') p0 = { x: p0.x, y: p0.y - 19 * ra.s }
     // Edges arriving from above stop short of the caption that sits over the box.
     if (sideOf(e, 'to') === 'top' && isBox(e.to) && (e.kind === 'pressure' || e.kind === 'involves')) p1 = { x: p1.x, y: p1.y - 19 * rb.s }
     // Edges entering from the boundary travel inward: flip the boundary-side tangent.

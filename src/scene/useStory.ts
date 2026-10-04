@@ -93,7 +93,13 @@ export function useStory(scene: Scene) {
 
   const purposePath = computed(() => {
     if (!state.focus) return []
-    return lineage(state.focus).map((id) => ({ id, label: NODES[id].label, relation: NODES[id].relation, kind: NODES[id].kind }))
+    let chain = lineage(state.focus)
+    if (domain.visiblePath) {
+      const shown = scene.composition().nodes
+      const end = chain.findIndex((id) => !shown[id])
+      if (end >= 0) chain = chain.slice(0, end)
+    }
+    return chain.map((id) => ({ id, label: NODES[id].label, relation: NODES[id].relation, kind: NODES[id].kind }))
   })
 
   return { line, echo, ask, click, background, suggestions, tour, touring, stopTour, intro, actions, purposePath }

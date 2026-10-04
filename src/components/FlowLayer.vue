@@ -128,7 +128,7 @@ function drawParticles(z: number, dt: number) {
     const curve = curves[e.id]
     if (!a || !curve) return flow.delete(e.id)
     const g = a.get('g')
-    const carries = e.kind === 'flow' || e.kind === 'becomes' || (e.kind === 'solves' && g < 0.5)
+    const carries = e.kind === 'flow' || e.kind === 'becomes' || ((e.kind === 'solves' || e.kind === 'serves') && g < 0.5)
     const op = a.get('o') * (1 - 0.82 * a.get('d'))
     if (!carries || op < 0.05) return
 

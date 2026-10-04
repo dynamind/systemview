@@ -14,6 +14,8 @@ export type Kind =
   | 'rule'
   | 'hypothesis'
   | 'context'
+  /** What someone actually wants: a rung on the ladder of “what is this for?” */
+  | 'need'
 export type Strategy = 'eliminate' | 'transform' | 'contain' | 'shift' | 'accept' | 'reverse'
 export type Side = 'left' | 'right' | 'top' | 'bottom'
 
@@ -37,6 +39,8 @@ export interface NodeDef {
   byRule?: boolean
   /** A named output that condensed out of the fog: drawn as a cloud shrinking into a dot. */
   condenses?: boolean
+  /** The caption over a box, in place of what its kind would say. */
+  tag?: string
 
   // Statements only derived worlds read (see derive.ts).
   /** Problem: the rule that makes it one. */
@@ -65,7 +69,8 @@ export interface EdgeDef {
   id: string
   from: string
   to: string
-  kind: 'flow' | 'becomes' | 'solves' | 'pressure' | 'speculates' | 'involves'
+  /** serves: a means rising to the end it's for. */
+  kind: 'flow' | 'becomes' | 'solves' | 'pressure' | 'speculates' | 'involves' | 'serves'
   valence?: Valence
   fromSide?: Side
   toSide?: Side
@@ -97,6 +102,7 @@ export function sizeOf(n: NodeDef): { w: number; h: number } {
     case 'part':
       return { w: Math.max(42, textWidth(n.label, FONT.part) + 12), h: 15 }
     case 'problem':
+    case 'need':
       return { w: 176, h: 46 }
     case 'solution':
       return { w: 150, h: 40 }
@@ -174,7 +180,8 @@ export function finish(out: Composition, s: BaseState, nodes: Record<string, Nod
       o: 1,
       p: 1,
       // A reversed solution stops being fed by its problem, and stops producing.
-      g: e.kind === 'solves' || e.kind === 'speculates' ? Math.max(b.g, b.r) : 0,
+      // A rung nobody needs any more leaves the links to it ghosted, above and below.
+      g: e.kind === 'solves' || e.kind === 'speculates' ? Math.max(b.g, b.r) : e.kind === 'serves' ? Math.max(a.g, b.g) : 0,
       // What condensed out of a reversed solution stays lit: it's the lesson.
       d: Math.max(a.r, b.r) > 0 && !nodes[e.to].condenses ? 0.6 : 0,
       delay: Math.max(a.delay, b.delay) + (e.inner ? 120 : 60),
@@ -241,6 +248,10 @@ export interface Domain<S extends BaseState = BaseState> {
   initialState(): S
   compose(s: S): Composition
   script(kit: Kit<S>): Script
+  /** How close the camera may come when framing (default 2.2): worlds with few boxes keep them life-size. */
+  maxZoom?: number
+  /** The purpose path stops where the canvas does: for worlds that reveal a lineage one step at a time. */
+  visiblePath?: boolean
   /** Every line the script can say, for worlds whose lines are built rather than written out. */
   lines?(): string[]
 }

@@ -3,6 +3,7 @@
 import type { BaseState, Domain } from '../scene/model'
 import { dairy } from './dairy'
 import { dairyDerived } from './dairyDerived'
+import { drill } from './drill'
 import { software } from './software'
 
-export const WORLDS = [dairy, software, dairyDerived] as unknown as Domain<BaseState>[]
+export const WORLDS = [dairy, software, dairyDerived, drill] as unknown as Domain<BaseState>[]

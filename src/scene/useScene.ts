@@ -102,7 +102,7 @@ export function useScene() {
     return { x0, y0, x1, y1 }
   }
 
-  function frame(ids: string[] | 'all', pad = 24, maxZoom = 2.2) {
+  function frame(ids: string[] | 'all', pad = 24, maxZoom = domain.maxZoom ?? 2.2) {
     const list = ids === 'all' ? Object.keys(comp.nodes) : ids
     const b = bboxOf(list)
     if (!isFinite(b.x0)) return

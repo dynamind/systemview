@@ -40,7 +40,7 @@ const frame = computed(() => {
     if (o < 0.004) continue
     const g = a.get('g')
     const p = Math.min(1, Math.max(0, a.get('p')))
-    const drawn = e.kind === 'flow' || (e.kind === 'solves' && g < 0.5)
+    const drawn = e.kind === 'flow' || ((e.kind === 'solves' || e.kind === 'serves') && g < 0.5)
     edges.push({ id: e.id, def: e, d: pathD(c), p, g, drawn, op: o * (1 - 0.82 * a.get('d')) })
   }
 
@@ -165,6 +165,7 @@ const strategyLabel: Record<string, string> = {
 
 function caption(n: RNode) {
   if (n.r > 0.5) return 'reversed'
+  if (n.def.tag) return n.def.tag
   if (n.def.byRule) return 'rule · solution by design'
   const s = strategyLabel[n.def.strategy ?? '']
   return n.def.by ? `${s} · by ${n.def.by}` : s
@@ -301,6 +302,14 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
           <text y="13" font-size="9" class="note serif" text-anchor="middle">{{ n.def.note }}</text>
         </template>
 
+        <template v-else-if="n.def.kind === 'need'">
+          <rect :x="-n.w / 2" :y="-n.h / 2" :width="n.w" :height="n.h" rx="10" class="box need-box" />
+          <text :y="-n.h / 2 - 7" font-size="7.5" class="caps" :class="n.g > 0.5 ? 'muted' : 'desired'" text-anchor="middle">{{ n.def.tag ?? 'need' }}</text>
+          <text :y="n.def.note ? -5 : 0" :font-size="FONT.box" class="label" text-anchor="middle" dominant-baseline="central">{{ n.def.label }}</text>
+          <text v-if="n.def.note" y="13" font-size="9" class="note serif" text-anchor="middle">{{ n.def.note }}</text>
+          <text v-if="n.g > 0.5" :y="n.h / 2 + 14" font-size="8" class="note serif" text-anchor="middle">no longer needed</text>
+        </template>
+
         <template v-else-if="n.def.kind === 'solution'">
           <rect
             :x="-n.w / 2"
@@ -338,7 +347,7 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
             y2="0"
             class="strike"
           />
-          <g :transform="`translate(0 ${n.h / 2 + 11})`">
+          <g v-if="residueOf(n.id, sc.composition().nodes).length" :transform="`translate(0 ${n.h / 2 + 11})`">
             <text x="-6" font-size="6.5" class="caps muted" text-anchor="end" dominant-baseline="central">residue</text>
             <g v-for="(r, i) in residueOf(n.id, sc.composition().nodes)" :key="i" :transform="`translate(${4 + i * 11} 0)`">
               <circle v-if="r.kind === 'diffuse'" r="5.5" class="ring undesired" />
@@ -463,6 +472,17 @@ text {
 .rule-bar {
   fill: var(--rule);
 }
+.need-box {
+  stroke: var(--desired);
+  stroke-width: calc(var(--px) * 1.3);
+}
+.node.ghost .need-box {
+  stroke: var(--muted);
+  stroke-dasharray: calc(var(--px) * 3) calc(var(--px) * 3);
+}
+.caps.desired {
+  fill: var(--desired);
+}
 .hypo-box {
   stroke: var(--unknown);
   stroke-width: calc(var(--px) * 1.15);
@@ -551,6 +571,14 @@ text {
 .edge.solves.ghost {
   stroke: var(--muted);
   stroke-opacity: 0.6;
+}
+.edge.serves {
+  stroke: var(--desired);
+  stroke-opacity: 0.55;
+}
+.edge.serves.ghost {
+  stroke: var(--muted);
+  stroke-opacity: 0.5;
 }
 .edge.pressure {
   stroke: var(--rule);

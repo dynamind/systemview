@@ -25,7 +25,7 @@ const purposeItems = computed(() => {
     items.push({ key: c.id, type: 'node', text: c.label, id: c.id, kind: c.kind })
     if (c.relation) items.push({ key: c.id + '-rel', type: 'rel', text: c.relation, id: c.id })
   }
-  if (path.at(-1)?.id === domain.system) items.push({ key: 'goal', type: 'goal', text: domain.goal, id: domain.system })
+  if (domain.goal && path.at(-1)?.id === domain.system) items.push({ key: 'goal', type: 'goal', text: domain.goal, id: domain.system })
   return items
 })
 const input = ref<HTMLInputElement>()
@@ -221,6 +221,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   border-color: var(--undesired);
   color: var(--undesired);
 }
+.pchip.need {
+  border-color: var(--desired);
+}
 .pchip.rule,
 .pchip.context {
   border-color: var(--rule);
@@ -376,13 +379,33 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .narrow {
   display: none;
 }
+.worlds a {
+  white-space: nowrap;
+}
+/* The worlds fold into one switcher before the header runs out of room */
+@media (max-width: 1100px) {
+  .worlds {
+    display: none;
+  }
+  .switcher {
+    display: block;
+    field-sizing: content;
+    min-width: 0;
+    font: 600 13px/1 var(--sans);
+    color: var(--ink);
+    background: none;
+    border: 0;
+    padding: 6px 2px;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+}
 @media (max-width: 640px) {
   .top {
     padding: 12px 12px 12px 16px;
   }
   .name,
   .crumb,
-  .worlds,
   .wide {
     display: none;
   }
@@ -390,16 +413,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     display: inline;
   }
   .switcher {
-    display: block;
-    field-sizing: content;
-    min-width: 0;
     max-width: 46vw;
-    font: 600 13px/1 var(--sans);
-    color: var(--ink);
-    background: none;
-    border: 0;
-    padding: 6px 2px;
-    text-overflow: ellipsis;
   }
   .controls {
     gap: 0;
