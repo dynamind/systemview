@@ -134,7 +134,8 @@ function caption(n: RNode) {
   return n.def.by ? `${s} · by ${n.def.by}` : s
 }
 
-const clickable = (id: string) => NODES[id].kind !== 'source' || id === 'capital'
+// Inputs to the system just flow in; an input a solution needs raises a question of its own.
+const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].parent
 </script>
 
 <template>

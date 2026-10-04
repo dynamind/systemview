@@ -5,6 +5,7 @@ import SystemCanvas from './components/SystemCanvas.vue'
 import { SAFE, SAFE_BOTTOM_NARRATING, useScene } from './scene/useScene'
 import { useStory } from './scene/useStory'
 import { setSound, sound } from './scene/voice'
+import { domain, WORLD_LINKS } from './scene/world'
 
 const scene = useScene()
 const story = useStory(scene)
@@ -24,7 +25,7 @@ const purposeItems = computed(() => {
     items.push({ key: c.id, type: 'node', text: c.label, id: c.id, kind: c.kind })
     if (c.relation) items.push({ key: c.id + '-rel', type: 'rel', text: c.relation, id: c.id })
   }
-  if (path.at(-1)?.id === 'farm') items.push({ key: 'goal', type: 'goal', text: 'make a living from milk', id: 'farm' })
+  if (path.at(-1)?.id === domain.system) items.push({ key: 'goal', type: 'goal', text: domain.goal, id: domain.system })
   return items
 })
 const input = ref<HTMLInputElement>()
@@ -59,8 +60,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     <div class="mark">
       <span class="glyph" aria-hidden="true">◫</span>
       SystemView
+      <span class="crumb">/</span>
+      <nav class="worlds" aria-label="Worlds">
+        <a v-for="w in WORLD_LINKS" :key="w.id" :href="w.href" :class="{ active: w.id === domain.id }">{{ w.title }}</a>
+      </nav>
       <Transition name="fade">
-        <span v-if="scene.state.zoom === 'farm'" class="crumb">/ Dairy farm / inside</span>
+        <span v-if="scene.state.zoom === 'inside'" class="crumb">/ inside</span>
       </Transition>
     </div>
     <div class="controls">
@@ -139,6 +144,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .crumb {
   font-weight: 400;
   color: var(--muted);
+}
+.worlds {
+  display: flex;
+  gap: 2px;
+}
+.worlds a {
+  font-weight: 400;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+.worlds a:hover {
+  color: var(--ink);
+  background: var(--paper-hover);
+}
+.worlds a.active {
+  color: var(--ink);
+  font-weight: 600;
 }
 .controls {
   display: flex;

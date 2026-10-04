@@ -3,7 +3,7 @@
 import { onBeforeUnmount, onMounted, reactive, shallowRef, watch } from 'vue'
 import { Animated, CAMERA } from '../motion/animator'
 import { curveLength, layoutEdges, type Curve, type Rect } from './geometry'
-import { compose, EDGES, NODES, type Composition, type SceneState, initialState } from './world'
+import { domain, EDGES, NODES, type BaseState, type Composition } from './world'
 
 type NodeKey = 'x' | 'y' | 'w' | 'h' | 'o' | 's' | 'f' | 'g' | 'd' | 'r'
 type EdgeKey = 'o' | 'p' | 'g' | 'd'
@@ -13,7 +13,8 @@ export const SAFE = { top: 96, bottom: 270, side: 48 }
 export const SAFE_BOTTOM_NARRATING = 170
 
 export function useScene() {
-  const state = reactive<SceneState>(initialState())
+  // Each world adds its own fields; the shell only touches the shared ones.
+  const state = reactive(domain.initialState()) as BaseState
   const nodeAnims = new Map<string, Animated<NodeKey>>()
   const edgeAnims = new Map<string, Animated<EdgeKey>>()
   const camera = new Animated<'x' | 'y' | 'lz' | 'b'>({ x: 0, y: 0, lz: Math.log(0.4), b: SAFE.bottom }, CAMERA)
@@ -29,7 +30,7 @@ export function useScene() {
   const now = () => time * 1000
 
   function apply() {
-    comp = compose(state)
+    comp = domain.compose(state)
     for (const [id, t] of Object.entries(comp.nodes)) {
       let a = nodeAnims.get(id)
       const entering = !a || a.springs.o.target === 0
@@ -218,10 +219,7 @@ export function useScene() {
     window.removeEventListener('resize', onResize)
   })
 
-  watch(
-    () => [state.zoom, state.manure, state.manureChoice, state.fog, state.promoted.join(), state.cap, state.capChoice, state.pays, state.beds, state.focus, state.hover],
-    apply,
-  )
+  watch(state, apply, { deep: true })
 
   return {
     state,

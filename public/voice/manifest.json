@@ -351,6 +351,298 @@
   "Preventive treatment keeps the herd healthy this year and makes treatment weaker for everyone later.": {
    "file": "7a90d1899dcf.m4a",
    "duration": 4866
+  },
+  "A product team, as a black box. Requests and guidance go in, features and a running service come out. So do bugs that escape, and debt that piles up quietly, and things nobody can name yet.": {
+   "file": "4afb6d9bbd42.m4a",
+   "duration": 12871
+  },
+  "Inside, requests become cards, cards cross the board, code is built and reviewed, and the test pipeline sends what it catches back to the backlog. Inside the boundary a bug is work. Past the release it’s an incident with a customer’s name on it.": {
+   "file": "9f0b5bea1f56.m4a",
+   "duration": 15496
+  },
+  "The team exists to turn what customers need into software they can rely on. Everything on this canvas, the board, the gates, the targets, is there because of that, or because of something that was.": {
+   "file": "ab84872b44d3.m4a",
+   "duration": 11412
+  },
+  "Requests arrive from customers, sales and support, more of them than any team can build. Choosing among them is the first thing the team does.": {
+   "file": "23462b1a6f1c.m4a",
+   "duration": 7021
+  },
+  "Product management sits outside the team and guides its product owners: what matters, for whom, by when. It arrives as priorities, and sometimes as dates.": {
+   "file": "5f83a858b28b.m4a",
+   "duration": 9286
+  },
+  "The one input that can’t be bought faster. Every other choice here is about spending it.": {
+   "file": "121555c2dc8c.m4a",
+   "duration": 4812
+  },
+  "Servers, pipelines and licences. Rented by the hour, so they show up on a bill instead of a board.": {
+   "file": "d4071de0ad84.m4a",
+   "duration": 6248
+  },
+  "Most of the running code was written by strangers, for free. It ages on their schedule, not the team’s.": {
+   "file": "c6acc611c580.m4a",
+   "duration": 6009
+  },
+  "What customers asked for, shipped. It’s what the roadmap counts.": {
+   "file": "ae20cbdc17e5.m4a",
+   "duration": 3409
+  },
+  "Software only helps while it runs. Keeping it running is half the work and almost none of the roadmap.": {
+   "file": "e440ad411f4d.m4a",
+   "duration": 4871
+  },
+  "Every team ships bugs. The ones caught inside become cards; the ones that escape become a customer’s bad day.": {
+   "file": "f1cb69ac1db6.m4a",
+   "duration": 7208
+  },
+  "Every shortcut is a loan against future work. It leaves no single trace, just a team that gets a little slower every quarter.": {
+   "file": "9f84901e775a.m4a",
+   "duration": 7107
+  },
+  "Every system has outputs nobody can name at design time. The question mark is honest about it.": {
+   "file": "1cfe17695286.m4a",
+   "duration": 5348
+  },
+  "Where requests, guidance and caught bugs queue up as cards. The product owner orders it; the order is the strategy.": {
+   "file": "14eeda9d60be.m4a",
+   "duration": 7058
+  },
+  "Scrum or kanban, the board makes work visible: what’s being done, what’s stuck, what’s next.": {
+   "file": "674c32e9c00a.m4a",
+   "duration": 6307
+  },
+  "Engineers turn cards into code and check each other’s. Where the time goes, and where shortcuts get taken.": {
+   "file": "2533eb537b9a.m4a",
+   "duration": 6099
+  },
+  "Every change runs the tests. What fails goes back to the backlog: a bug caught inside is just another card.": {
+   "file": "9c7a0b5cc03d.m4a",
+   "duration": 6539
+  },
+  "The boundary that matters: before it, a bug costs the team; after it, the customer.": {
+   "file": "9803efe7a63d.m4a",
+   "duration": 4717
+  },
+  "Someone watches the service at three in the morning. Their pager is where escaped bugs come home.": {
+   "file": "3ef6278b4880.m4a",
+   "duration": 4967
+  },
+  "A bug the pipeline catches is a card. A bug a customer catches is an escalation, a hotfix and a dent in trust.": {
+   "file": "2e1dd349d414.m4a",
+   "duration": 8610
+  },
+  "Escaped bugs become a problem the day a customer finds one first. The obvious answer is a gate: QA signs off every release. Fewer bugs get out. Releases slow down, and quality quietly becomes someone else’s job.": {
+   "file": "7a35c72bb2ce.m4a",
+   "duration": 14024
+  },
+  "“Customers find bugs”. Two answers to one problem, each leaving different things behind.": {
+   "file": "4e6c2db4150a.m4a",
+   "duration": 4499
+  },
+  "A QA department tests each release before it goes out: contain the bugs at the boundary. It works, and it moves the boundary.": {
+   "file": "a43531851b84.m4a",
+   "duration": 7267
+  },
+  "A QA gate again: contain the bugs at the release, at the cost of speed and of who owns quality.": {
+   "file": "94ffb22181a5.m4a",
+   "duration": 5896
+  },
+  "The gate needs people behind it: testers outside the team, with their own queue and their own manager.": {
+   "file": "dd11deffc910.m4a",
+   "duration": 4900
+  },
+  "The gate catches what the team missed. Fewer bugs reach customers.": {
+   "file": "c75642684f84.m4a",
+   "duration": 3552
+  },
+  "Every release waits its turn in QA’s queue. Changes pile up, so each release is bigger, and riskier.": {
+   "file": "d2a40a801a44.m4a",
+   "duration": 6124
+  },
+  "With a gate behind them, developers test less. The gate works, so it’s needed more: shifting the burden.": {
+   "file": "edfddb3a6ab7.m4a",
+   "duration": 5664
+  },
+  "What a separate QA department does to the team, over years, nobody can fully say.": {
+   "file": "1dad21bef050.m4a",
+   "duration": 4615
+  },
+  "The team writes tests that run on every change: eliminate escapes at the source by catching bugs where they’re cheap.": {
+   "file": "956a49c53a65.m4a",
+   "duration": 6350
+  },
+  "Tests in the pipeline instead: catch bugs at the commit, inside the boundary, where they’re only work. The price is tests to maintain, and the ones that fail at random.": {
+   "file": "ef0ce380f96c.m4a",
+   "duration": 9664
+  },
+  "A bug caught minutes after it’s written costs minutes. The customer never meets it.": {
+   "file": "4282e90e7f88.m4a",
+   "duration": 4351
+  },
+  "Tests are code too. Every feature now comes with tests to write and keep up to date.": {
+   "file": "475ec1852855.m4a",
+   "duration": 5788
+  },
+  "Some tests fail at random. Once people learn to rerun until green, the pipeline stops meaning anything.": {
+   "file": "345db1d30c10.m4a",
+   "duration": 6085
+  },
+  "What a pipeline teaches a team to ignore, nobody knows yet.": {
+   "file": "e5d8951cf1bd.m4a",
+   "duration": 3308
+  },
+  "A competitor shipped first. That’s product management’s problem, not the team’s, until a date brings it inside.": {
+   "file": "43ce498f8959.m4a",
+   "duration": 6331
+  },
+  "The date is someone else’s solution. For product management it answers a competitor; for the team it is a new problem, made on purpose.": {
+   "file": "520f07b384c2.m4a",
+   "duration": 7252
+  },
+  "Features were always slow to come. The date is what makes too few of them a problem by Q3.": {
+   "file": "39e78c122f11.m4a",
+   "duration": 5512
+  },
+  "A date arrives. It’s product management’s answer to a competitor, and here it lands as a problem, on purpose: the scope won’t fit. Cutting scope meets the date with less, and breaks promises somebody already made upstream.": {
+   "file": "b43f37b13c68.m4a",
+   "duration": 13500
+  },
+  "“Too much for Q3”. Two answers to one problem, each leaving different things behind.": {
+   "file": "b02c12f97701.m4a",
+   "duration": 4660
+  },
+  "The product owner keeps the date and drops what won’t fit. Honest, and someone upstream has to hear it.": {
+   "file": "b988ecbac537.m4a",
+   "duration": 5724
+  },
+  "Cut the scope instead. What it leaves behind: promises broken upstream and a question mark.": {
+   "file": "27bbb1959b93.m4a",
+   "duration": 5220
+  },
+  "Q3 is met, with less in it. What shipped works.": {
+   "file": "4a88ef42851c.m4a",
+   "duration": 3409
+  },
+  "Product management sold the full scope already. The cut lands on their credibility, with customers and with sales.": {
+   "file": "fb72246a761a.m4a",
+   "duration": 6128
+  },
+  "What dropped scope does to next quarter’s roadmap, nobody can say yet.": {
+   "file": "c1d30b5cb17f.m4a",
+   "duration": 3820
+  },
+  "The team keeps the scope and the date by not testing. The problem doesn’t go away; it moves somewhere slower.": {
+   "file": "04931c294bda.m4a",
+   "duration": 6335
+  },
+  "Or keep the full scope and skip the tests. The date is met in full, and the cost moves: into debt, and into the bugs customers will find. That’s the first branch again, fed from here.": {
+   "file": "4a894f8868fe.m4a",
+   "duration": 10701
+  },
+  "Everything promised, by Q3. On the roadmap, it looks like a win.": {
+   "file": "e6a1e5153e45.m4a",
+   "duration": 3614
+  },
+  "Untested code is code nobody dares to change. Next quarter starts slower.": {
+   "file": "27db87f5c0c1.m4a",
+   "duration": 5104
+  },
+  "What wasn’t tested gets tested by customers. It feeds straight back into the first problem: customers find the bugs.": {
+   "file": "a942a7d7e778.m4a",
+   "duration": 5924
+  },
+  "A team that learns the date beats the tests learns something else too. Nobody can say yet what.": {
+   "file": "f2219c5d1a2d.m4a",
+   "duration": 5317
+  },
+  "Without a forecast, product management can’t promise and sales can’t sell. Predictability is what the people outside the box ask for.": {
+   "file": "24a5d65d23ab.m4a",
+   "duration": 7882
+  },
+  "Inside the team, a problem: nobody can say when anything will be done. Management sets velocity targets, believing that what gets measured gets delivered. The burn-up charts steady. What else the targets do is still a question mark.": {
+   "file": "1ea0db029569.m4a",
+   "duration": 13544
+  },
+  "“Velocity targets”: a solution that turned out to be an experiment. It failed, and the team still came out knowing more than it did.": {
+   "file": "38b090cfb68c.m4a",
+   "duration": 7142
+  },
+  "Management chose velocity targets, believing a number to aim for would make delivery steady. A clear purpose, and an untested one.": {
+   "file": "a4b1c4028a2c.m4a",
+   "duration": 6613
+  },
+  "The targets did what they were chosen for. The charts went up and to the right, sprint after sprint.": {
+   "file": "0e7d339741b3.m4a",
+   "duration": 5315
+  },
+  "A three-point story became a five. Nobody cheated; everyone estimated a little safer. Nobody named this output at design time; product management traced it, comparing charts with what shipped.": {
+   "file": "3e5f8ec837dd.m4a",
+   "duration": 11743
+  },
+  "Then the fog condensed: story-point inflation. Velocity rose every sprint and features didn’t. Product management noticed first, comparing the charts with what actually shipped.": {
+   "file": "a140c598b819.m4a",
+   "duration": 10348
+  },
+  "Every solution is a hypothesis. The targets had a clear purpose, and outputs nobody had named yet.": {
+   "file": "8e2e82652bfa.m4a",
+   "duration": 5575
+  },
+  "Once points inflate, the forecast they were meant to give is worse than having none.": {
+   "file": "9a08de225f72.m4a",
+   "duration": 3942
+  },
+  "An output nobody could name became one nobody could ignore. Points mean nothing now, so management drops the targets. The dashboards go dark, and the organisation knows something it didn’t.": {
+   "file": "d04a4572da19.m4a",
+   "duration": 10205
+  },
+  "“Points mean nothing”, and what its answer left behind.": {
+   "file": "3623483783dd.m4a",
+   "duration": 3146
+  },
+  "Sometimes the best solution to a problem is to undo the solution that caused it. Management dropped the targets and kept counting what shipped.": {
+   "file": "bea3d5a95a09.m4a",
+   "duration": 7268
+  },
+  "The charts everybody watched are gone. For a while, nobody outside the team knows how it’s doing.": {
+   "file": "90d2e32d69ce.m4a",
+   "duration": 5637
+  },
+  "When a measure becomes a target, it stops measuring. The experiment failed, and that knowledge is an output too.": {
+   "file": "9e590f976abb.m4a",
+   "duration": 5939
+  },
+  "Undoing a solution is a solution too, with outputs of its own.": {
+   "file": "5ee8cc40461c.m4a",
+   "duration": 3713
+  },
+  "Upgrades never beat features for a sprint slot. Each skipped one makes the next bigger, until “legacy” is the accepted state.": {
+   "file": "9d00a104c221.m4a",
+   "duration": 7055
+  },
+  "“Libraries age into obsolescence” is now a known undesirable, joining the outputs of the team and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "7b38185d4e2d.m4a",
+   "duration": 12257
+  },
+  "An urgent fix skips the tests to reach customers faster, and ships the next bug with it.": {
+   "file": "d212df3a9d1c.m4a",
+   "duration": 4985
+  },
+  "“Hotfixes bypass the pipeline” is now a known undesirable, joining the outputs of the team and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "b6fe92b54dba.m4a",
+   "duration": 11837
+  },
+  "Dates squeeze the team, shortcuts slip the dates, and each side’s fix makes the other’s problem worse.": {
+   "file": "1389eebf6e7a.m4a",
+   "duration": 5667
+  },
+  "“Product and teams blame each other” is now a known undesirable, joining the outputs of the team and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "39f51ea21e13.m4a",
+   "duration": 11678
+  },
+  "Follow any box back and you reach the reason it exists. “Drop the targets” answers “points mean nothing”, which came from “velocity targets”, chosen to answer “delivery unpredictable”: a problem only because the team exists to deliver software customers rely on.": {
+   "file": "808ea218c26d.m4a",
+   "duration": 14044
   }
  }
 }

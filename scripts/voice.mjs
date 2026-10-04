@@ -4,9 +4,11 @@
 //   npm run voice              speak new or changed lines, drop clips no line uses
 //   npm run voice -- --force   speak every line again
 //
-// Lines are found in the source: every string literal passed to say() or as the
-// text of why() in useStory.ts, and every `why` in world.ts. A clip is named
-// after its text and the voice, so editing a line only re-speaks that line.
+// Lines are found in the source. For the hand-written dairy world: every string
+// literal passed to say() or as the text of why() in its story, and every `why`
+// in its world. Worlds built from statements list their own lines (lines()).
+// A clip is named after its text and the voice, so editing a line only
+// re-speaks that line.
 //
 // Speech comes from scripts/voice.py (Chatterbox Turbo on MLX, cloning
 // scripts/voice-reference.flac). Needs uv and ffmpeg; Apple Silicon only.
@@ -18,6 +20,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
 import ts from 'typescript'
+import { createServer } from 'vite'
 
 const { values: opt } = parseArgs({ options: { force: { type: 'boolean', default: false } } })
 const DIR = 'public/voice'
@@ -64,8 +67,8 @@ function texts(node, consts, nodes) {
   return []
 }
 
-const story = parse('src/scene/useStory.ts')
-const world = parse('src/scene/world.ts')
+const story = parse('src/domains/dairy/story.ts')
+const world = parse('src/domains/dairy/world.ts')
 const nodes = nodesIn(world)
 const consts = new Map()
 for (const s of story.statements)
@@ -85,6 +88,12 @@ const visit = (node) => {
 }
 visit(story)
 for (const n of nodes) if (n.why) found.push(n.why)
+
+// Worlds that build their lines say what they are.
+const vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' })
+const { WORLDS } = await vite.ssrLoadModule('/src/domains/index.ts')
+for (const w of WORLDS) if (w.lines) found.push(...w.lines())
+await vite.close()
 const lines = [...new Set(found)]
 
 // ------------------------------------------------------------ what needs speaking
