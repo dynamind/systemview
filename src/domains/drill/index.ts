@@ -64,8 +64,7 @@ const nodes: NodeDef[] = [
     why: 'The picture is there to make a room feel like theirs. You could keep climbing, but somewhere you stop: high enough that other answers fit, low enough to act on.',
   },
 
-  // What the drill leaves behind
-  { id: 'holds', kind: 'sink', label: 'Holds anything', valence: 'desired', parent: 'drill', relation: 'left by', why: 'A screw in a plug holds a mirror, a shelf, a heavy frame. That’s the drill’s real strength: it doesn’t care what you hang.' },
+  // What each rung leaves behind, hung on the rung that causes it
   { id: 'dust', kind: 'sink', label: 'Dust & noise', valence: 'undesired', parent: 'drill', relation: 'left by', why: 'Drilling means dust on the floor and noise for the neighbours. Small, but nobody asked for it.' },
   {
     id: 'scars',
@@ -73,7 +72,7 @@ const nodes: NodeDef[] = [
     label: 'Holes when you move',
     note: 'filled and painted over',
     valence: 'undesired',
-    parent: 'drill',
+    parent: 'hole',
     relation: 'left by',
     why: 'The picture comes down one day; the hole doesn’t. It gets filled, sanded and painted over, often by someone else.',
   },
@@ -86,6 +85,15 @@ const nodes: NodeDef[] = [
     parent: 'drill',
     relation: 'left by',
     why: 'A pipe, a cable, a hollow wall that won’t hold a plug. Nobody knows until the bit goes in.',
+  },
+  {
+    id: 'holds',
+    kind: 'sink',
+    label: 'Holds anything',
+    valence: 'desired',
+    parent: 'screw',
+    relation: 'left by',
+    why: 'A screw in a plug holds a mirror, a shelf, a heavy frame. That’s the strength of this way, and it comes from the plug and screw, not the drill.',
   },
 
   // The answer one rung up
@@ -154,10 +162,10 @@ const EDGES: EdgeDef[] = [
   up('uNails', 'nails', 'picture', { fromSide: 'left', toSide: 'right' }),
   up('uPlants', 'plants', 'home', { fromSide: 'right', toSide: 'left' }),
   up('uPaint', 'paint', 'home', { fromSide: 'right', toSide: 'left' }),
-  out('oHolds', 'drill', 'holds', 'desired'),
   out('oDust', 'drill', 'dust', 'undesired'),
-  out('oScars', 'drill', 'scars', 'undesired'),
   out('oDUnknown', 'drill', 'dUnknown', 'unknown'),
+  out('oScars', 'hole', 'scars', 'undesired'),
+  out('oHolds', 'screw', 'holds', 'desired'),
   out('oClean', 'nails', 'clean', 'desired'),
   out('oLimit', 'nails', 'limit', 'undesired'),
   out('oNUnknown', 'nails', 'nUnknown', 'unknown'),
@@ -165,7 +173,9 @@ const EDGES: EdgeDef[] = [
 
 const RUNGS = ['drill', 'hole', 'screw', 'picture', 'home']
 const STEP = 110
-const DRILL_OUTS = ['holds', 'dust', 'scars', 'dUnknown']
+/** What each rung leaves behind; together, what the drill’s way costs. */
+const LEFT: Record<string, string[]> = { drill: ['dust', 'dUnknown'], hole: ['scars'], screw: ['holds'] }
+const DRILL_OUTS = Object.values(LEFT).flat()
 const NAIL_OUTS = ['clean', 'limit', 'nUnknown']
 
 function compose(s: State): Composition {
@@ -181,7 +191,13 @@ function compose(s: State): Composition {
       s: skipped && i === 0 ? 0.86 : 1,
     }),
   )
-  if (s.residue && !skipped) column(DRILL_OUTS, 115, STEP, 42, (i) => ({ delay: 260 + i * 70, from: 'drill' }))
+  // Each rung's leftovers sit to its right; when the nails skip a rung, they go quiet with it.
+  if (s.residue) {
+    let k = 0
+    RUNGS.slice(0, 3).forEach((rung, i) =>
+      column(LEFT[rung], 115, STEP - i * STEP, 42, () => ({ delay: 260 + k++ * 90, from: rung, g: skipped ? 1 : 0 })),
+    )
+  }
   if (s.alt) {
     put('nails', 270, -2 * STEP, { delay: 200, from: 'picture', g: skipped ? 0 : 1, s: skipped ? 1 : 0.86 })
     if (skipped) column(NAIL_OUTS, 380, -2 * STEP, 42, (i) => ({ delay: 420 + i * 70, from: 'nails' }))
@@ -207,11 +223,11 @@ const L = {
   ],
   top: 'The whole ladder: feeling at home, a picture, a screw, a hole, a drill. Each rung answers the one above it.',
   residue:
-    'What does the drill leave behind? It holds anything, which is its strength. It also leaves dust and noise, holes that stay when you move out, and a question mark: what’s behind the plaster?',
+    'What does this way leave behind? The drill: dust and noise, and a gamble with what’s behind the plaster. The hole: it stays when you move out. The plug and screw: they hold anything. That’s the strength of this way.',
   alt: 'Up at the picture, other answers fit. Adhesive nails stick straight to the wall. They don’t need a hole, a plug or a screw, and so they don’t need a drill.',
   toNails:
-    'Three rungs skipped. The nails leave different things behind: a clean wall, a weight limit, and a question mark of their own. Will it still hold in three years? The higher you attach a solution, the more of the ladder it lets go of.',
-  toDrill: 'Back to the drill. It holds anything, and it costs a hole, some dust, and a gamble with the plaster. Neither answer is clean; they leave different things behind.',
+    'Three rungs skipped, and what they left behind goes with them: the dust, the gamble, the holes. The strength goes too: glue won’t hold just anything. The nails leave their own: a clean wall, a weight limit, and a question mark. Will it still hold in three years? The higher you attach a solution, the more of the ladder it lets go of, good and bad.',
+  toDrill: 'Back to the drill. The plug and screw hold anything, and the way there costs a hole, some dust, and a gamble with the plaster. Neither answer is clean; they leave different things behind.',
   more: 'Climb once more, and the picture is just one answer too. Plants would do, or a colour on the wall. The higher you climb, the more answers fit, and the less any of them looks like a drill.',
   overview: 'The whole ladder, as far as we’ve climbed it.',
   close: 'People don’t want a drill. Ask what each thing is for, climb until the answers start to multiply, and solve it there.',
@@ -245,10 +261,12 @@ function script({ scene, state, say, settle }: Kit<State>): Script {
     },
 
     residue() {
+      // Climb first: what a way leaves behind only reads once you see what it's for.
+      if (state.rung < 3) state.rung = 3
       state.residue = true
       state.choice = 'drill'
       state.focus = null
-      settle(['drill', ...DRILL_OUTS, ...(state.rung ? ['hole'] : [])], 50)
+      settle([...ladder().slice(0, 4), ...DRILL_OUTS], 50)
       say(L.residue)
     },
 
@@ -266,7 +284,7 @@ function script({ scene, state, say, settle }: Kit<State>): Script {
       state.focus = null
       state.choice = state.choice === 'drill' ? 'nails' : 'drill'
       if (state.choice === 'drill') state.residue = true
-      settle([...ladder().slice(0, 4), 'nails', ...(state.choice === 'nails' ? NAIL_OUTS : DRILL_OUTS)], 50)
+      settle([...ladder().slice(0, 4), 'nails', ...(state.residue ? DRILL_OUTS : []), ...(state.choice === 'nails' ? NAIL_OUTS : [])], 50)
       say(state.choice === 'nails' ? L.toNails : L.toDrill)
     },
 
@@ -299,7 +317,7 @@ function script({ scene, state, say, settle }: Kit<State>): Script {
     if (id === top() && state.rung < 4) return actions.climb()
     if (id === 'drill' && state.choice === 'nails') return actions.swap()
     if (id === 'nails' && state.choice === 'drill') return actions.swap()
-    if (id === 'drill' && !state.residue) return actions.residue()
+    if (id === 'drill' && !state.residue && state.rung >= 3) return actions.residue()
     actions.why(id)
   }
 
@@ -334,7 +352,7 @@ function script({ scene, state, say, settle }: Kit<State>): Script {
     const add = (label: string, run: () => void) => s.push({ label, run })
     const asks = ['What’s the drill for?', 'What’s the hole for?', 'What’s the screw for?']
     if (state.rung < 3) add(asks[state.rung], actions.climb)
-    if (state.rung >= 1 && !state.residue && state.choice === 'drill') add('What does the drill leave behind?', actions.residue)
+    if (state.rung >= 3 && !state.residue && state.choice === 'drill') add('What does this way leave behind?', actions.residue)
     if (state.rung >= 3 && !state.alt) add('Is there another way?', actions.alt)
     if (state.alt) add(state.choice === 'drill' ? 'What about adhesive nails?' : 'Compare with the drill', actions.swap)
     if (state.rung >= 3 && !state.more) add('Why a picture?', actions.more)

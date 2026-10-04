@@ -180,8 +180,9 @@ export function finish(out: Composition, s: BaseState, nodes: Record<string, Nod
       o: 1,
       p: 1,
       // A reversed solution stops being fed by its problem, and stops producing.
-      // A rung nobody needs any more leaves the links to it ghosted, above and below.
-      g: e.kind === 'solves' || e.kind === 'speculates' ? Math.max(b.g, b.r) : e.kind === 'serves' ? Math.max(a.g, b.g) : 0,
+      // A rung nobody needs any more leaves the links to it ghosted, above and below,
+      // and what it left behind goes quiet with it.
+      g: e.kind === 'solves' || e.kind === 'speculates' ? Math.max(b.g, b.r) : e.kind === 'serves' ? Math.max(a.g, b.g) : e.kind === 'flow' ? a.g : 0,
       // What condensed out of a reversed solution stays lit: it's the lesson.
       d: Math.max(a.r, b.r) > 0 && !nodes[e.to].condenses ? 0.6 : 0,
       delay: Math.max(a.delay, b.delay) + (e.inner ? 120 : 60),

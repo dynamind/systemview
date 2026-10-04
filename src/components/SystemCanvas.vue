@@ -74,7 +74,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => off?.())
 
-const nodeOpacity = (n: RNode) => n.o * (1 - 0.8 * n.d) * (n.def.kind === 'solution' ? 1 - 0.5 * n.g : 1)
+const nodeOpacity = (n: RNode) => n.o * (1 - 0.8 * n.d) * (n.def.kind === 'solution' || n.def.kind === 'sink' ? 1 - 0.5 * n.g : 1)
 
 // ------------------------------------------------------------ input
 
@@ -513,6 +513,12 @@ text {
   stroke-width: calc(var(--px) * 1.1);
   stroke-dasharray: calc(var(--px) * 1.6) calc(var(--px) * 1.6);
 }
+.node.ghost .dot:not(.unknown) {
+  fill: var(--muted);
+}
+.node.ghost .dot.unknown {
+  stroke: var(--muted);
+}
 .dot.residue.unknown {
   stroke-width: var(--px);
   stroke-dasharray: calc(var(--px) * 1.4) calc(var(--px) * 1.4);
@@ -567,6 +573,10 @@ text {
 .edge.solves {
   stroke: var(--undesired);
   stroke-opacity: 0.5;
+}
+.edge.flow.ghost {
+  stroke: var(--muted);
+  stroke-opacity: 0.35;
 }
 .edge.solves.ghost {
   stroke: var(--muted);
