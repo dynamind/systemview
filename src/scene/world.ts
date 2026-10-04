@@ -92,16 +92,16 @@ const nodes: NodeDef[] = [
   },
 
   // Inputs
-  { id: 'water', kind: 'source', label: 'Water' },
-  { id: 'feed', kind: 'source', label: 'Feed' },
-  { id: 'genetics', kind: 'source', label: 'Genetics' },
-  { id: 'energy', kind: 'source', label: 'Energy' },
-  { id: 'services', kind: 'source', label: 'Vet & contractors' },
+  { id: 'water', kind: 'source', label: 'Water', why: 'Water goes in for drinking and for cleaning. It’s cheap enough that nobody counts it, which is exactly why it’s worth drawing.' },
+  { id: 'feed', kind: 'source', label: 'Feed', why: 'Bought feed tops up what the farm’s own grass can’t provide. Every kilo carries someone else’s land with it.' },
+  { id: 'genetics', kind: 'source', label: 'Genetics', why: 'Genetics arrive as breeding choices. They shape the herd for a decade, long after anyone remembers making them.' },
+  { id: 'energy', kind: 'source', label: 'Energy', why: 'Energy runs the milking, the cooling and the pumps. It flows in quietly, and the farm only notices it on the bill.' },
+  { id: 'services', kind: 'source', label: 'Vet & contractors', why: 'The vet and the contractors bring skills the farm doesn’t keep in-house. They see many farms, which makes them the first to spot a pattern.' },
 
   // Outputs
   { id: 'milk', kind: 'sink', label: 'Milk', valence: 'desired', parent: 'farm', relation: 'output of', why: 'Milk is the reason the farm exists. Every other box on this canvas is either feeding it, or cleaning up after it.' },
   { id: 'beef', kind: 'sink', label: 'Beef & calves', valence: 'desired', parent: 'farm', relation: 'output of', why: 'A cow has to calve to give milk, so every litre comes with a calf attached. Beef is the by-product that pays.' },
-  { id: 'manure', kind: 'sink', label: 'Manure', valence: 'undesired', parent: 'farm', relation: 'output of' },
+  { id: 'manure', kind: 'sink', label: 'Manure', valence: 'undesired', parent: 'farm', relation: 'output of', why: 'Manure leaves the herd every day, wanted or not. On the farm’s own fields it’s fertiliser; past what the land can take, it’s a problem waiting for a name.' },
   { id: 'methane', kind: 'sink', label: 'Methane', valence: 'undesired', parent: 'farm', relation: 'output of', why: 'Methane leaves with every breath the herd takes. It used to leave for free; since the cap, every tonne counts against the farm.' },
   { id: 'runoff', kind: 'sink', label: 'Nitrogen runoff', valence: 'undesired', diffuse: true, parent: 'farm', relation: 'output of', why: 'Runoff is diffuse. It leaves through every field at once, a little at a time. Diffuse outputs are the hardest to solve, and the easiest to leave off the map.' },
   { id: 'unknown', kind: 'sink', label: '?', note: 'not yet known', valence: 'unknown', parent: 'farm', relation: 'output of' },
@@ -311,6 +311,11 @@ const nodes: NodeDef[] = [
   },
 ]
 
+// A confirmed guess joins the farm's other outputs: same name, now a fact about the farm.
+export const named = (hypothesis: string) => `${hypothesis}Named`
+for (const h of nodes.filter((n) => n.kind === 'hypothesis'))
+  nodes.push({ id: named(h.id), kind: 'sink', label: h.label, note: h.pattern, valence: 'undesired', parent: 'farm', relation: 'output of', why: h.why })
+
 export const NODES: Record<string, NodeDef> = Object.fromEntries(nodes.map((n) => [n.id, n]))
 
 const f = (id: string, from: string, to: string, valence: Valence, extra: Partial<EdgeDef> = {}): EdgeDef => ({
@@ -403,6 +408,7 @@ export const EDGES: EdgeDef[] = [
   { id: 'q1', from: 'unknown', to: 'h1', kind: 'speculates' },
   { id: 'q2', from: 'unknown', to: 'h2', kind: 'speculates' },
   { id: 'q3', from: 'unknown', to: 'h3', kind: 'speculates' },
+  ...['h1', 'h2', 'h3'].map((h) => f(`e${named(h)}`, 'farm', named(h), 'undesired')),
 ]
 
 export const EDGE_BY_ID: Record<string, EdgeDef> = Object.fromEntries(EDGES.map((e) => [e.id, e]))
@@ -498,7 +504,12 @@ export function compose(s: SceneState): Composition {
   // The farm and its boundary
   put('farm', 0, 0, { f: s.zoom === 'farm' ? 1 : 0 })
   column(['energy', 'genetics', 'water', 'feed', 'services'], -420, 0, 50, (i) => ({ delay: 120 + i * 60, from: 'farm' }))
-  column(['milk', 'beef', 'manure', 'methane', 'runoff', 'unknown'], 420, 0, 50, (i) => ({ delay: 120 + i * 60, from: 'farm' }))
+  // Confirmed guesses line up with the other outputs, above the question mark: the fog shrinks, it never closes.
+  // The column grows downwards, so the branches hanging off the outputs above stay put.
+  const confirmed = s.fog ? s.promoted : []
+  ;['milk', 'beef', 'manure', 'methane', 'runoff', ...confirmed.map(named), 'unknown'].forEach((id, i) =>
+    put(id, 420, -125 + i * 50, i < 5 || id === 'unknown' ? { delay: 120 + i * 60, from: 'farm' } : { delay: 150, from: confirmed[i - 5] }),
+  )
 
   // Inside
   if (s.zoom === 'farm') {
@@ -554,21 +565,24 @@ export function compose(s: SceneState): Composition {
 
   // A rule makes methane a problem
   if (s.cap) {
-    put('cap', 690, 100, { delay: 0 })
-    put('pCap', 690, 178, { delay: 280, from: 'methane' })
+    // Confirmed guesses have long names; the branch steps aside so they don't run under it.
+    const reach = Math.max(0, ...confirmed.map((h) => 434 + sizeOf(NODES[named(h)]).w))
+    const dx = Math.max(0, reach + 24 - (690 - Math.max(sizeOf(NODES.cap).w, sizeOf(NODES.pCap).w) / 2))
+    put('cap', 690 + dx, 100, { delay: 0 })
+    put('pCap', 690 + dx, 178, { delay: 280, from: 'methane' })
     const chosen = s.capChoice
     const alt = chosen === 'additive' ? 'fewer' : 'additive'
-    put(chosen, 930, 178, { delay: 520, from: 'pCap' })
-    put(alt, 930, 300, { delay: 640, from: 'pCap', g: 1, s: 0.86 })
+    put(chosen, 930 + dx, 178, { delay: 520, from: 'pCap' })
+    put(alt, 930 + dx, 300, { delay: 640, from: 'pCap', g: 1, s: 0.86 })
     const outs = chosen === 'additive' ? ['lessCH4', 'costL', 'aUnknown'] : ['lessCH4b', 'income', 'leakage', 'fUnknown']
-    column(outs, 1080, 178, 38, (i) => ({ delay: 760 + i * 70, from: chosen }))
+    column(outs, 1080 + dx, 178, 38, (i) => ({ delay: 760 + i * 70, from: chosen }))
   }
 
   // The fog: guesses, not facts
   if (s.fog) {
-    ;['h1', 'h2', 'h3'].forEach((id, i) =>
-      put(id, 720, 400 + i * 74, { delay: 200 + i * 160, from: 'unknown', g: s.promoted.includes(id) ? 0 : 1 }),
-    )
+    ;['h1', 'h2', 'h3']
+      .filter((id) => !s.promoted.includes(id))
+      .forEach((id, i) => put(id, 720, 400 + i * 74, { delay: 200 + i * 160, from: 'unknown', g: 1 }))
   }
 
   // Edges: visible when both ends are

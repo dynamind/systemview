@@ -48,6 +48,14 @@
    "file": "7b991a3e27c9.m4a",
    "duration": 11572
   },
+  "Every guess here has been confirmed, and joined the other outputs. The question mark stays anyway: there is always an output nobody has named yet.": {
+   "file": "442804c3ab5d.m4a",
+   "duration": 7721
+  },
+  "Some guesses are confirmed now, and sit with the other outputs. The rest are still guesses, not facts. Click one to make it a known undesirable.": {
+   "file": "e60e48cc7a51.m4a",
+   "duration": 8748
+  },
   "Every box has an output nobody can name at design time. These are guesses, not facts, each matched to a pattern that has caught systems out before. Click one to make it a known undesirable.": {
    "file": "caccd505ae53.m4a",
    "duration": 10974
@@ -56,17 +64,17 @@
    "file": "31992255bf27.m4a",
    "duration": 2901
   },
-  "“Efficiency gains grow the herd” is now a known undesirable, ready to become a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
-   "file": "568e8abae21a.m4a",
-   "duration": 10025
+  "“Efficiency gains grow the herd” is now a known undesirable, joining the farm’s outputs and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "285ce72fcf19.m4a",
+   "duration": 11943
   },
-  "“Bought feed replaces grassland” is now a known undesirable, ready to become a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
-   "file": "4ba4b728902b.m4a",
-   "duration": 9758
+  "“Bought feed replaces grassland” is now a known undesirable, joining the farm’s outputs and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "8b68fbd78b00.m4a",
+   "duration": 11666
   },
-  "“Routine antibiotics breed resistance” is now a known undesirable, ready to become a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
-   "file": "9fbc6636418f.m4a",
-   "duration": 10671
+  "“Routine antibiotics breed resistance” is now a known undesirable, joining the farm’s outputs and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.": {
+   "file": "0c7d72b383d5.m4a",
+   "duration": 11774
   },
   "Methane leaves the farm unpriced. Nothing inside this boundary makes it the farm’s problem. Something outside would have to: a rule, a price, a norm.": {
    "file": "5bf75b06ab50.m4a",
@@ -112,6 +120,26 @@
    "file": "6e9e9c6e0dcb.m4a",
    "duration": 6115
   },
+  "Water goes in for drinking and for cleaning. It’s cheap enough that nobody counts it, which is exactly why it’s worth drawing.": {
+   "file": "b5ce320c17b7.m4a",
+   "duration": 5879
+  },
+  "Bought feed tops up what the farm’s own grass can’t provide. Every kilo carries someone else’s land with it.": {
+   "file": "b706b6dea93b.m4a",
+   "duration": 6864
+  },
+  "Genetics arrive as breeding choices. They shape the herd for a decade, long after anyone remembers making them.": {
+   "file": "9403f6a32d94.m4a",
+   "duration": 6550
+  },
+  "Energy runs the milking, the cooling and the pumps. It flows in quietly, and the farm only notices it on the bill.": {
+   "file": "6130d5a66394.m4a",
+   "duration": 6981
+  },
+  "The vet and the contractors bring skills the farm doesn’t keep in-house. They see many farms, which makes them the first to spot a pattern.": {
+   "file": "70cde9998fed.m4a",
+   "duration": 7141
+  },
   "Milk is the reason the farm exists. Every other box on this canvas is either feeding it, or cleaning up after it.": {
    "file": "f89a29848dcf.m4a",
    "duration": 6015
@@ -119,6 +147,10 @@
   "A cow has to calve to give milk, so every litre comes with a calf attached. Beef is the by-product that pays.": {
    "file": "00c87147cbe9.m4a",
    "duration": 7177
+  },
+  "Manure leaves the herd every day, wanted or not. On the farm’s own fields it’s fertiliser; past what the land can take, it’s a problem waiting for a name.": {
+   "file": "49b5359f2a2c.m4a",
+   "duration": 9340
   },
   "Methane leaves with every breath the herd takes. It used to leave for free; since the cap, every tonne counts against the farm.": {
    "file": "27b1882ffdb1.m4a",

@@ -4,7 +4,7 @@
 import { computed, ref } from 'vue'
 import type { Scene } from './useScene'
 import * as voice from './voice'
-import { EDGES, lineage, NODES } from './world'
+import { EDGES, lineage, named, NODES } from './world'
 
 export interface Line {
   key: number
@@ -40,6 +40,9 @@ export function useStory(scene: Scene) {
     if (spoken) voice.play(text)
     else voice.stop()
   }
+
+  /** The question mark with what it has turned up: confirmed outputs and the guesses still open. */
+  const fogView = () => ['unknown', ...state.promoted.map(named), ...['h1', 'h2', 'h3'].filter((h) => !state.promoted.includes(h))]
 
   function settle(view: string[] | 'all', pad?: number, max?: number) {
     scene.sync()
@@ -130,7 +133,16 @@ export function useStory(scene: Scene) {
       state.zoom = 'root'
       state.focus = null
       state.fog = true
-      settle(['unknown', 'h1', 'h2', 'h3'], 30)
+      settle(fogView(), 30)
+      const open = ['h1', 'h2', 'h3'].filter((h) => !state.promoted.includes(h)).length
+      if (!open)
+        return say(
+          'Every guess here has been confirmed, and joined the other outputs. The question mark stays anyway: there is always an output nobody has named yet.',
+        )
+      if (open < 3)
+        return say(
+          'Some guesses are confirmed now, and sit with the other outputs. The rest are still guesses, not facts. Click one to make it a known undesirable.',
+        )
       say(
         'Every box has an output nobody can name at design time. These are guesses, not facts, each matched to a pattern that has caught systems out before. Click one to make it a known undesirable.',
       )
@@ -140,12 +152,14 @@ export function useStory(scene: Scene) {
       state.focus = null
       if (state.promoted.includes(id)) {
         state.promoted = state.promoted.filter((p) => p !== id)
+        settle(fogView(), 30)
         say('Back to a guess. Unconfirmed, but not forgotten.')
         return
       }
       state.promoted = [...state.promoted, id]
+      settle(fogView(), 30)
       say(
-        `“${NODES[id].label}” is now a known undesirable, ready to become a problem of its own. The question mark stays, though. The fog shrinks; it never closes.`,
+        `“${NODES[id].label}” is now a known undesirable, joining the farm’s outputs and becoming a problem of its own. The question mark stays, though. The fog shrinks; it never closes.`,
       )
     },
 
