@@ -95,11 +95,15 @@ export function useStory(scene: Scene) {
     if (!state.focus) return []
     let chain = lineage(state.focus)
     if (domain.visiblePath) {
+      // The composition isn't reactive; the scene's tick is, and it moves whenever the composition does.
+      void scene.tick.value
       const shown = scene.composition().nodes
       const end = chain.findIndex((id) => !shown[id])
       if (end >= 0) chain = chain.slice(0, end)
     }
-    return chain.map((id) => ({ id, label: NODES[id].label, relation: NODES[id].relation, kind: NODES[id].kind }))
+    // On a ladder, the last rung shown has nothing above it yet, so it says no “for”.
+    const last = domain.visiblePath ? chain.length - 1 : chain.length
+    return chain.map((id, i) => ({ id, label: NODES[id].label, relation: i < last ? NODES[id].relation : undefined, kind: NODES[id].kind }))
   })
 
   return { line, echo, ask, click, background, suggestions, tour, touring, stopTour, intro, actions, purposePath }

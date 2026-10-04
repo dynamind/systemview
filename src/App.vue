@@ -197,16 +197,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 }
 
 .purpose {
+  /* Spans the width so it never shrinks to the half right of a centring offset and wraps */
   position: fixed;
   top: 56px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 24px;
+  right: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: calc(100vw - 48px);
+  pointer-events: none;
+}
+.purpose > * {
+  pointer-events: auto;
 }
 .pchip {
   font: 500 12px/1 var(--sans);
