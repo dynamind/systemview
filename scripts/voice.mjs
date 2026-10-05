@@ -3,6 +3,8 @@
 //
 //   npm run voice              speak new or changed lines, drop clips no line uses
 //   npm run voice -- --force   speak every line again
+//   npm run voice -- --voice roy --reference renders/voices/roy.m4a --world drill
+//       a trial voice: clips go to public/voice-roy (not committed), heard with ?voice=roy
 //
 // Lines are found in the source. For the hand-written dairy world: every string
 // literal passed to say() or as the text of why() in its story, and every `why`
@@ -22,10 +24,17 @@ import { parseArgs } from 'node:util'
 import ts from 'typescript'
 import { createServer } from 'vite'
 
-const { values: opt } = parseArgs({ options: { force: { type: 'boolean', default: false } } })
-const DIR = 'public/voice'
+const { values: opt } = parseArgs({
+  options: {
+    force: { type: 'boolean', default: false },
+    voice: { type: 'string' },
+    reference: { type: 'string', default: 'scripts/voice-reference.flac' },
+    world: { type: 'string' },
+  },
+})
+const DIR = opt.voice ? `public/voice-${opt.voice}` : 'public/voice'
 const MANIFEST = join(DIR, 'manifest.json')
-const REFERENCE = 'scripts/voice-reference.flac'
+const REFERENCE = opt.reference
 const MODEL = 'chatterbox-turbo-fp16' // keep in step with voice.py; part of every clip's name
 
 // ------------------------------------------------------------ find the lines
@@ -86,13 +95,15 @@ const visit = (node) => {
   }
   ts.forEachChild(node, visit)
 }
-visit(story)
-for (const n of nodes) if (n.why) found.push(n.why)
+if (!opt.world || opt.world === 'dairy') {
+  visit(story)
+  for (const n of nodes) if (n.why) found.push(n.why)
+}
 
 // Worlds that build their lines say what they are.
 const vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' })
 const { WORLDS } = await vite.ssrLoadModule('/src/domains/index.ts')
-for (const w of WORLDS) if (w.lines) found.push(...w.lines())
+for (const w of WORLDS) if (w.lines && (!opt.world || w.id === opt.world)) found.push(...w.lines())
 await vite.close()
 const lines = [...new Set(found)]
 

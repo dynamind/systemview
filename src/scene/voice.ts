@@ -9,7 +9,9 @@ interface Clip {
   duration: number
 }
 
-const BASE = `${import.meta.env.BASE_URL}voice/`
+// ?voice=name plays a trial voice from public/voice-name (see scripts/voice.mjs).
+const TRIAL = new URLSearchParams(location.search).get('voice')
+const BASE = `${import.meta.env.BASE_URL}${TRIAL ? `voice-${TRIAL}` : 'voice'}/`
 let clips: Record<string, Clip> = {}
 let current: HTMLAudioElement | null = null
 // Recording a video (?render): the clips are mixed in afterwards, so the page stays quiet.
