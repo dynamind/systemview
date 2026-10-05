@@ -1,0 +1,161 @@
+// Hanging a picture again, written as statements and run on deriveLadder(). The
+// golden version (../drill) is laid out and scripted by hand; this one keeps its
+// words, so the two can be held side by side. Where they differ, the engine decides.
+
+import { deriveLadder } from '../../scene/ladder'
+
+export const drillDerived = deriveLadder({
+  id: 'drill-derived',
+  title: 'Hanging a picture (derived)',
+  intro: 'Someone walks into a hardware store. They want a drill. Or do they?',
+  want: 'picture',
+  leaves:
+    'What does this way leave behind? The drill: dust and noise, and a gamble with what’s behind the plaster. The hole: it stays when you move out. The plug and screw: they hold anything. That’s the strength of this way.',
+  top: 'The whole ladder: feeling at home, a picture, a screw, a hole, a drill. Each rung answers the one above it.',
+  close: 'People don’t want a drill. Ask what each thing is for, climb until the answers start to multiply, and solve it there.',
+  intents: [
+    [/nail|adhesive|glue|stick/, 'nails'],
+    [/plant|paint|colou?r|higher|further|keep going|feel|home|room/, 'home'],
+  ],
+
+  nodes: [
+    // The ladder, bottom to top
+    {
+      id: 'drill',
+      kind: 'solution',
+      label: 'Drill',
+      tag: 'what they asked for',
+      parent: 'hole',
+      relation: 'makes',
+      ask: 'Compare with the drill',
+      says: 'Back to the drill. The plug and screw hold anything, and the way there costs a hole, some dust, and a gamble with the plaster. Neither answer is clean; they leave different things behind.',
+      why: 'The drill is what people walk into the shop for. It’s a solution, and like every solution it exists for something else.',
+    },
+    {
+      id: 'hole',
+      kind: 'need',
+      label: 'A hole in the wall',
+      tag: 'means',
+      parent: 'screw',
+      relation: 'for',
+      ask: 'What’s the drill for?',
+      says: 'Nobody wants a drill. They want a hole in the wall. The drill is just how you get one.',
+      why: 'Nobody wants a hole in the wall. It’s a step on the way to something, and it stays behind long after the reason for it has gone.',
+    },
+    {
+      id: 'screw',
+      kind: 'need',
+      label: 'Plug & screw',
+      note: 'something to hang it on',
+      tag: 'means',
+      parent: 'picture',
+      relation: 'to hold',
+      aka: ['plug', 'screw'],
+      ask: 'What’s the hole for?',
+      says: 'Nobody wants a hole either. It’s there for a plug and a screw: something to hang a thing on.',
+      why: 'The plug and screw give the picture something to hang on. They’re means too, chosen because of the drill as much as for the picture.',
+    },
+    {
+      id: 'picture',
+      kind: 'need',
+      label: 'Picture on the wall',
+      note: 'what they came in for',
+      parent: 'home',
+      relation: 'for',
+      aka: ['picture', 'frame', 'painting'],
+      ask: 'What’s the screw for?',
+      says: 'And the screw is there to hold a picture. That’s what they came in for: a picture on the wall. Everything below it is means.',
+      why: 'This is what they actually want: a picture on the wall. Everything below it is one way of getting there.',
+    },
+    {
+      id: 'home',
+      kind: 'need',
+      label: 'Feeling at home',
+      note: 'why the picture is there',
+      aka: ['home', 'room'],
+      ask: 'Why a picture?',
+      says: 'Climb once more, and the picture is just one answer too. Plants would do, or a colour on the wall. The higher you climb, the more answers fit, and the less any of them looks like a drill.',
+      why: 'The picture is there to make a room feel like theirs. You could keep climbing, but somewhere you stop: high enough that other answers fit, low enough to act on.',
+    },
+
+    // What each rung leaves behind
+    { id: 'dust', kind: 'sink', label: 'Dust & noise', valence: 'undesired', parent: 'drill', relation: 'left by', why: 'Drilling means dust on the floor and noise for the neighbours. Small, but nobody asked for it.' },
+    {
+      id: 'dUnknown',
+      kind: 'sink',
+      label: '?',
+      note: 'what’s behind the plaster',
+      valence: 'unknown',
+      parent: 'drill',
+      relation: 'left by',
+      why: 'A pipe, a cable, a hollow wall that won’t hold a plug. Nobody knows until the bit goes in.',
+    },
+    {
+      id: 'scars',
+      kind: 'sink',
+      label: 'Holes when you move',
+      note: 'filled and painted over',
+      valence: 'undesired',
+      parent: 'hole',
+      relation: 'left by',
+      why: 'The picture comes down one day; the hole doesn’t. It gets filled, sanded and painted over, often by someone else.',
+    },
+    {
+      id: 'holds',
+      kind: 'sink',
+      label: 'Holds anything',
+      valence: 'desired',
+      parent: 'screw',
+      relation: 'left by',
+      why: 'A screw in a plug holds a mirror, a shelf, a heavy frame. That’s the strength of this way, and it comes from the plug and screw, not the drill.',
+    },
+
+    // The answer one rung up
+    {
+      id: 'nails',
+      kind: 'solution',
+      label: 'Adhesive nails',
+      tag: 'attaches higher',
+      parent: 'picture',
+      relation: 'to hang',
+      aka: ['nails', 'adhesive', 'glue'],
+      ask: 'What about adhesive nails?',
+      prelude: 'Up at the picture, other answers fit. Adhesive nails stick straight to the wall. They don’t need a hole, a plug or a screw, and so they don’t need a drill.',
+      says: 'Three rungs skipped, and what they left behind goes with them: the dust, the gamble, the holes. The strength goes too: glue won’t hold just anything. The nails leave their own: a clean wall, a weight limit, and a question mark. Will it still hold in three years? The higher you attach a solution, the more of the ladder it lets go of, good and bad.',
+      why: 'Adhesive nails stick straight to the wall. They answer the picture, not the hole, so the hole, the plug and the screw are no longer needed, and neither is the drill.',
+    },
+    { id: 'clean', kind: 'sink', label: 'Clean wall', valence: 'desired', parent: 'nails', relation: 'left by', why: 'Peel the nail off and the wall is as it was. Nothing to fill, nothing to paint.' },
+    {
+      id: 'limit',
+      kind: 'sink',
+      label: 'Weight limit',
+      note: 'a few kilos at most',
+      valence: 'undesired',
+      parent: 'nails',
+      relation: 'left by',
+      why: 'Glue holds a frame, not a mirror. Attaching higher costs something too: it only fits the needs it was made for.',
+    },
+    {
+      id: 'nUnknown',
+      kind: 'sink',
+      label: '?',
+      note: 'will it hold in three years?',
+      valence: 'unknown',
+      parent: 'nails',
+      relation: 'left by',
+      why: 'Heat, damp, old paint. Whether the glue still holds in three years is a question mark, and the picture finds out first.',
+    },
+
+    // Other answers at the top
+    { id: 'plants', kind: 'solution', label: 'Plants', tag: 'another answer', parent: 'home', relation: 'for', why: 'Plants make a room feel lived in too. Up here, a picture is just one answer among many.' },
+    {
+      id: 'paint',
+      kind: 'solution',
+      label: 'Paint a wall',
+      tag: 'another answer',
+      parent: 'home',
+      relation: 'for',
+      why: 'A colour on the wall does it without hanging anything at all. The higher the rung, the less the answers look like a drill.',
+    },
+  ],
+})

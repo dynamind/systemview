@@ -14,7 +14,9 @@ Each world is one system and one story. Select a world with the `world` URL para
 | `?world=software` | Enterprise product team | Written as statements, laid out by `derive()` |
 | `?world=dairy-derived` | Dairy farm | Written as statements, laid out by `derive()` |
 | `?world=drill` | Hanging a picture | Written by hand |
+| `?world=drill-derived` | Hanging a picture | Written as statements, laid out by `deriveLadder()` |
 | `?world=buildbuy` | Build or buy | Written by hand |
+| `?world=buildbuy-derived` | Build or buy | Written as statements, laid out by `deriveLadder()` |
 
 Other URL parameters:
 
@@ -144,7 +146,8 @@ To make sure the deploy worked, compare the JavaScript file name in the live `in
 | Path | Contents |
 | --- | --- |
 | `src/scene/` | The shared engine: the model, layout, animation state, story runner, and voice playback |
-| `src/scene/derive.ts` | Makes a layout and a story from statements |
+| `src/scene/derive.ts` | Makes a layout and a story from statements about a system |
+| `src/scene/ladder.ts` | Makes a layout and a story from statements about a ladder of needs and a rule |
 | `src/components/` | The canvas, the particle layer, and the narration panel |
 | `src/domains/` | One folder for each world. `index.ts` lists the worlds. |
 | `scripts/voice.mjs`, `scripts/voice.py` | The voice script |

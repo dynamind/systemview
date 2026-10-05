@@ -43,20 +43,22 @@ export interface NodeDef {
   tag?: string
 
   // Statements only derived worlds read (see derive.ts).
-  /** Problem: the rule that makes it one. */
+  /** Problem: the rule that makes it one. Solution on a ladder: the rule that made it the sensible answer. */
   pressedBy?: string
   /** Condensing output: the input whose people traced it. */
   tracedBy?: string
   /** Other words people use for it. */
   aka?: string[]
-  /** Problem: the question that opens it. Solution: the question that brings it forward. */
+  /** Problem: the question that opens it. Solution: the question that brings it forward. Need: the question that climbs to it. Rule: the question that changes it. */
   ask?: string
-  /** Problem: said when it first opens. Solution: said when swapped in. Condensing output: said when it surfaces. */
+  /** Problem: said when it first opens. Solution: said when swapped in. Condensing output: said when it surfaces. Need: said on arrival. Rule: said when it changes. */
   says?: string
   /** Problem: said when it's opened again. */
   again?: string
-  /** Output with a problem: said on the first look, before the problem opens; the next look opens it. */
+  /** Output with a problem: said on the first look, before the problem opens; the next look opens it. First alternative on a ladder: said when the alternatives come up. */
   prelude?: string
+  /** Rule on a ladder: said when someone reaches for an answer it still keeps off the table. */
+  blocked?: string
 
   // Finishing touches by hand, for derived worlds.
   /** Part: where it sits inside the box. */
