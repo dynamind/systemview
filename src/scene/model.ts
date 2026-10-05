@@ -158,7 +158,7 @@ export function lineage(nodes: Record<string, NodeDef>, id: string): string[] {
   return chain
 }
 
-/** Places nodes by id; `column` centres a list on cy. */
+/** Places nodes by id; `column` centers a list on cy. */
 export function placer(nodes: Record<string, NodeDef>, out: Composition) {
   const put = (id: string, x: number, y: number, extra: Partial<NodeTarget> = {}) => {
     const { w, h } = sizeOf(nodes[id])

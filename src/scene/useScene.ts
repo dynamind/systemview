@@ -113,7 +113,7 @@ export function useScene() {
     wake()
   }
 
-  /** Moves the bottom edge of the framing area, keeping what's on screen centred in the new area. */
+  /** Moves the bottom edge of the framing area, keeping what's on screen centered in the new area. */
   function setBottomInset(px: number) {
     camera.set({ b: px }, now())
     wake()

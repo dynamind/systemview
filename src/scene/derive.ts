@@ -121,7 +121,7 @@ export function derive(w: World): Domain<DerivedState> {
   /** The problem a node hangs under, at the top level. */
   const topOf = (id: string) => [...lineage(N, id)].reverse().find((c) => topProblems.includes(c))
 
-  // Parts sit in flow order, zig-zagging so neighbours never share a line.
+  // Parts sit in flow order, zig-zagging so neighbors never share a line.
   const rank: Record<string, number> = Object.fromEntries(parts.map((p) => [p, 0]))
   for (const [a, b] of w.inner)
     if (parts.includes(a) && parts.includes(b) && parts.indexOf(a) < parts.indexOf(b)) rank[b] = Math.max(rank[b], rank[a] + 1)
@@ -294,7 +294,7 @@ export function derive(w: World): Domain<DerivedState> {
     const clear = (top: number, bottom: number) =>
       Math.max(690, ...outs.filter((o) => out.nodes[o].y > top - 12 && out.nodes[o].y < bottom + 12).map((o) => 420 + reach(o)))
 
-    // Branches off the outputs stack to the right and stay centred on what they grew from.
+    // Branches off the outputs stack to the right and stay centered on what they grew from.
     const right: { items: Placed[]; y: number; top: number; bottom: number }[] = []
     for (const o of outs)
       for (const p of problemsOf(o))

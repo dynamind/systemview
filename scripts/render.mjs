@@ -114,7 +114,7 @@ async function step() {
   }, 1000 / fps)
   if (line.key !== lastKey && line.text) spoken.push({ text: line.text, at: frames / fps })
   lastKey = line.key
-  // Playwright's screenshot honours the device scale; a raw CDP capture comes back at CSS size.
+  // Playwright's screenshot honors the device scale; a raw CDP capture comes back at CSS size.
   const jpeg = await page.screenshot({ type: 'jpeg', quality: 95, scale: 'device', caret: 'initial' })
   if (!ffmpeg.stdin.write(jpeg)) await new Promise((r) => ffmpeg.stdin.once('drain', r))
   frames++

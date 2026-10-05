@@ -14,7 +14,7 @@ let ctx: CanvasRenderingContext2D | null = null
 let dpr = 1
 const RENDER = new URLSearchParams(location.search).has('render')
 
-// ------------------------------------------------------------ colours
+// ------------------------------------------------------------ colors
 
 const colors: Record<string, string> = {}
 const media = window.matchMedia('(prefers-color-scheme: dark)')

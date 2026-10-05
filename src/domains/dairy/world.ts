@@ -1,4 +1,4 @@
-// The dairy-farm world: a hand-placed catalogue of boxes and flows, and a
+// The dairy-farm world: a hand-placed catalog of boxes and flows, and a
 // compose() that turns the scene state into layout targets for the animator.
 // Everything here is written out by hand; compare the derived worlds (derive.ts).
 
@@ -370,7 +370,7 @@ export function compose(s: SceneState): Composition {
   put('farm', 0, 0, { f: s.zoom === 'inside' ? 1 : 0 })
   column(['energy', 'genetics', 'water', 'feed', 'services'], -420, 0, 50, (i) => ({ delay: 120 + i * 60, from: 'farm' }))
   // Confirmed guesses line up with the other outputs, above the question mark: the fog shrinks, it never closes.
-  // The column stays centred on the farm; the problems hanging off the outputs move with them.
+  // The column stays centered on the farm; the problems hanging off the outputs move with them.
   const confirmed = s.fog ? s.promoted : []
   const lift = -25 * confirmed.length
   ;['milk', 'beef', 'manure', 'methane', 'runoff', ...confirmed.map(named), 'unknown'].forEach((id, i) =>
