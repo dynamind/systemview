@@ -17,6 +17,7 @@ Each world is one system and one story. Select a world with the `world` URL para
 | `?world=drill-derived` | Hanging a picture | Written as statements, laid out by `deriveLadder()` |
 | `?world=buildbuy` | Build or buy | Written by hand |
 | `?world=buildbuy-derived` | Build or buy | Written as statements, laid out by `deriveLadder()` |
+| `?world=milk` | Milk (explore) | Written as an outline in `models/milk.txt`, laid out by `deriveExplore()` |
 
 Other URL parameters:
 
@@ -148,6 +149,9 @@ To make sure the deploy worked, compare the JavaScript file name in the live `in
 | `src/scene/` | The shared engine: the model, layout, animation state, story runner, and voice playback |
 | `src/scene/derive.ts` | Makes a layout and a story from statements about a system |
 | `src/scene/ladder.ts` | Makes a layout and a story from statements about a ladder of needs and a rule |
+| `src/scene/outline.ts` | Reads a model written as an indented outline. The comment at the top gives the format. |
+| `src/scene/explore.ts` | Makes a canvas to explore an outline: no script and no voice, it grows where you click |
+| `models/` | Models written as outlines |
 | `src/components/` | The canvas, the particle layer, and the narration panel |
 | `src/domains/` | One folder for each world. `index.ts` lists the worlds. |
 | `scripts/voice.mjs`, `scripts/voice.py` | The voice script |

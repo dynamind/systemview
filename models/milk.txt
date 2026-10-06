@@ -1,0 +1,80 @@
+# The milk system of systems, told by consumer pull: start at what people
+# want on the table, and ask how they get it. The ways to get it compete on
+# what they offer, each with its own trade-offs: the residue it leaves, and
+# what that hurts. A way can need parts, systems that serve no need of their
+# own. Inside a way, one part can answer what another leaves.
+
+need Dairy on the table
+  for consumers
+  cares about: safe, consistent, affordable, accessible
+  uses: milk
+  why: People want milk, butter and cheese on the table: safe to eat, the same every time, at a price they can pay, and there when they want it.
+
+# ------------------------------------------------------------ three ways
+
+system Cow and bucket
+  serves Dairy on the table with fresh milk, while the cow is in milk
+  how: a family keeps a cow and milks it by hand
+  why: The first answer. One cow, one bucket, one household.
+  leaves: + fresh milk, while the cow is in milk
+          dry for weeks before each calf (hurts: accessible)
+          spoils in a day (hurts: accessible, safe)
+          differs per cow and season (hurts: consistent)
+          a cow to buy and keep (hurts: affordable)
+          inconvenience: housing, feed, care, calves, manure (hurts: accessible)
+          ~ methane
+
+system Farm shop
+  serves Dairy on the table with fresh milk, every day
+  how: buy milk, butter and cheese at a farm nearby
+  leaves: + fresh milk, every day
+          + butter and cheese that keep
+          a trip to the farm (hurts: accessible)
+          every farm makes its own (hurts: consistent)
+
+system Market
+  serves Dairy on the table with fresh milk, every day
+  how: buy dairy in a shop around the corner, any day
+  needs: Dairy farm, Milk collection, Dairy plant
+  uses: packaged milk from Dairy plant
+  leaves: + fresh milk, every day
+          + good, even quality
+          + dairy around the corner, any day
+          a higher price (hurts: affordable)
+          ~ a higher environmental impact
+          a long chain to keep running
+          ? who sets the price
+
+# ------------------------------------------------------------ what the market needs
+
+system Dairy farm
+  how: a farm milks its herd for the dairy, not for its own customers
+  why: Selling to a dairy is a different business from selling at the door.
+  uses: feed, water, genetics, energy, vet and contractors
+  leaves: + raw milk
+          + calves and beef
+          differs per farm and season (hurts: consistent)
+          too little milk to supply a market (hurts: accessible)
+          manure
+          ~ methane
+
+system Milk collection
+  answers too little milk to supply a market
+  how: a tanker picks up the milk of many farms
+  why: The market needs scale, lots of milk. One farm can't deliver that; many farms together can.
+  uses: raw milk from Dairy farm, a driver, fuel
+  leaves: + raw milk in bulk
+          milk from many farms mixed (hurts: safe, consistent)
+
+system Dairy plant
+  answers milk from many farms mixed
+  how: a cooperative plant pasteurizes, homogenizes, standardizes and packs the milk of its members
+  uses: raw milk in bulk from Milk collection, energy, water
+  leaves: + packaged milk
+          + safe to drink
+          + always the same taste and fat
+          + scale lowers the cost per liter
+
+rule Milk quota
+  presses on Dairy farm
+  why: From 1984 to 2015 the EU capped how much milk each farm could deliver, to end the milk lakes and butter mountains.

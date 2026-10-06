@@ -102,6 +102,9 @@ export function useScene() {
     return { x0, y0, x1, y1 }
   }
 
+  /** A frame asked for while the window had no size; the next resize does it. */
+  let deferred: Parameters<typeof frame> | undefined
+
   function frame(ids: string[] | 'all', pad = 24, maxZoom = domain.maxZoom ?? 2.2) {
     const list = ids === 'all' ? Object.keys(comp.nodes) : ids
     const b = bboxOf(list)
@@ -109,6 +112,9 @@ export function useScene() {
     // Frame against where the inset is heading, not where it is mid-ease.
     const area = screenArea(camera.springs.b.target)
     const z = Math.min(area.w / (b.x1 - b.x0 + pad * 2), area.h / (b.y1 - b.y0 + pad * 2), maxZoom)
+    // A hidden pane has no size, and the log of a zoom of zero or less poisons the camera.
+    if (!(z > 0)) return void (deferred = [ids, pad, maxZoom])
+    deferred = undefined
     camera.set({ x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, lz: Math.log(z) }, now())
     wake()
   }
@@ -224,6 +230,7 @@ export function useScene() {
   const onResize = () => {
     viewport.w = window.innerWidth
     viewport.h = window.innerHeight
+    if (deferred) frame(...deferred)
   }
 
   onMounted(() => {

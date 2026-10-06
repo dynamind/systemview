@@ -26,6 +26,7 @@ Read `README.md` first. It tells you how to run, voice, render, and deploy the a
 
 - A world is a `Domain` (refer to `src/scene/model.ts`). Add new worlds to `WORLDS` in `src/domains/index.ts`.
 - Hand-written worlds place their nodes with `placer()` and call `finish()` to make the edges.
+- Explore worlds read an outline from `models/` with `deriveExplore()`. Keep the outline format small: prefer forms that map onto predicates and properties, because the format may move to the Ontology DSL later.
 - Derived worlds give statements only. `derive()` makes the layout and the story for a system with a boundary. `deriveLadder()` does this for a ladder of needs without a boundary. The comment at the top of each file tells how it reads each statement.
 
 ## Checks
