@@ -82,15 +82,12 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
   const insideToo = (u: Instance, input: Flow) => [
     ...new Set(model.through.filter((t) => t.outer === input && t.to.up === u).flatMap((t) => routes.filter((r) => r.to === t.to && r.input === t.input).map((r) => r.from.machine.label))),
   ]
-  // A flow that is the only output of one machine and the only input of the next shows one label, not two.
-  // A machine with more inputs or outputs keeps all of them in its lists, so the lists stay whole.
+  // A flow that is the only input of a machine shows one label, not two: the label of the output it comes from.
+  // A machine with more inputs keeps all of them in its list, so the list stays whole.
   const joined = new Set(
     routes.filter((r) => {
       const sole = (xs: unknown[]) => xs.length === 1
       return (
-        sole(outsOf(r.from)) &&
-        sole(routes.filter((x) => x.from === r.from)) &&
-        !model.leaves.some((l) => l.from === r.from) &&
         sole(insOf(r.to)) &&
         sole(routes.filter((x) => x.to === r.to)) &&
         !r.to.kids.length &&
