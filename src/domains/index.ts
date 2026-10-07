@@ -7,7 +7,8 @@ import { dairy } from './dairy'
 import { dairyDerived } from './dairyDerived'
 import { drill } from './drill'
 import { drillDerived } from './drillDerived'
+import { machines } from './machines'
 import { milk } from './milk'
 import { software } from './software'
 
-export const WORLDS = [dairy, software, dairyDerived, drill, drillDerived, buildBuy, buildBuyDerived, milk] as unknown as Domain<BaseState>[]
+export const WORLDS = [dairy, software, dairyDerived, drill, drillDerived, buildBuy, buildBuyDerived, milk, machines] as unknown as Domain<BaseState>[]

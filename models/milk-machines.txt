@@ -1,0 +1,207 @@
+# The milk model in function machine terms. src/scene/machines.ts reads it and finds the
+# gaps (node scripts/gaps.mjs). ?world=machines shows it, with the gaps on each output.
+#
+#   system X           a function machine: what goes in, what comes out
+#   outside X          a black box we do not open: only its boundary is modeled
+#   need X             what someone wants; its input says what it accepts
+#   rule X             a tolerance someone wrote down, imposed upstream
+#
+#   in:  a, b from Y   inputs; "from Y" names the system whose output it is. Only a
+#                      system that stands in no boundary says "from": a boundary routes
+#                      the outputs of its machines to their inputs by name. When several
+#                      inputs name the same system, each one gets its own instance of it.
+#   starts with: a, b  inputs the machine needs only to start: a stock, such as a cow or
+#                      a building. "in" names the flows that keep it running.
+#   in:  a from somewhere  a source we do not expand. Any machine can say it. The input
+#                      needs no supplier and does not cross the boundary it stands in.
+#   out: a to somewhere    a sink we do not expand: the output needs no receiver.
+#   out: a, b          outputs; + wanted, ~ unwanted, ? unknown
+#   contains: A, B     the machines inside this system's boundary
+#   limits: a into Y   for a rule: the flow it sets a tolerance on
+#   how, why           free text
+#
+#   d: v               under an output: its value on dimension d
+#   d: a > b           under an input: the values it accepts on dimension d, most
+#                      desired first. Values that are not listed are refused.
+#
+# The dimensions are treatment, consistency, access, price, temperature, volume and
+# amount. Each one is an ordered vocabulary, like "class X orderedBy field" in Ontology55.
+# An input that does not name a dimension does not care about it.
+#
+# Values carry through. A machine gives only the values it changes; it takes the rest from
+# its input of the same name. Pasteurizing makes raw milk pasteurized, and the milk stays as
+# consistent as it was. So one machine can stand in many boundaries.
+#
+# Gaps are derived, not written. Each value an output gives is compared with the
+# ranking of the input that receives it:
+#   - the first value: no gap
+#   - a lower value: a pain point for the owner of the receiver; lower is worse
+#   - a value that is not listed, or no input at all: refused; the receiver fails
+# The "# gaps:" comments below say what the engine should find, so the model can be
+# checked by hand first.
+
+need Dairy on the table
+  for consumers
+  in: milk
+      treatment: pasteurized > raw
+      consistency: consistent > varies
+      access: every day nearby > every day at the farm > with dry spells
+      price: low > medium > high
+  why: People want milk on the table: safe to drink, the same every time, at a price they can pay, and there when they want it.
+  # Some consumers rank raw first. They are a second need with their own ranking.
+
+# ------------------------------------------------------------ three ways, competing for the need's input
+
+system Cow and bucket
+  how: a family keeps a cow and milks it by hand
+  starts with: a cow, a bucket, housing
+  in: feed, water, care
+  out: + milk
+         treatment: raw
+         consistency: varies
+         access: with dry spells
+         price: high
+       + calves
+       ~ manure
+       ~ methane
+  # gaps at the need: pain points on treatment, consistency, access (last of three) and price (last of three)
+  # Where the cow comes from is an input problem we leave open: an input that no system gives out.
+  # ? price: high, because a family must buy and keep a whole cow.
+
+system Farm shop
+  how: buy milk at a farm nearby, pasteurized on the farm
+  contains: Pasteurizing
+  in: raw milk from Dairy farm
+  out: + milk
+         consistency: varies
+         access: every day at the farm
+         price: medium
+  # The raw milk comes from one dairy farm. The shop pasteurizes it with the same machine as
+  # the Dairy plant; the milk it sells takes "pasteurized" from that machine.
+  # Some farms sell raw milk too. That serves the second need, of consumers who rank raw first.
+  # gaps at the need: pain points on consistency, access and price
+  # ? price: medium is a guess.
+
+system Market
+  how: buy dairy in a shop around the corner, any day
+  in: packaged milk from Dairy plant
+      treatment: pasteurized
+      consistency: consistent
+      volume: bulk
+  out: + milk
+         access: every day nearby
+         price: medium
+  # gaps at the need: a pain point on price. The shop adds a margin, but scale lowers the cost.
+
+# ------------------------------------------------------------ the dairy farm
+
+system Dairy farm
+  how: a farm milks its herd for the dairy, not for its own customers
+  why: Selling to a dairy is a different business from selling at the door.
+  contains: Herd, Rearing, Cooling, Fields
+  in: water, genetics, vet and contractors, cows and bulls from somewhere, feed
+  out: + raw milk
+       + calves
+       + cows and bulls to somewhere
+       ~ manure
+       ~ runoff
+       ~ methane
+  # The outputs follow the order of the outputs of Herd. Each one gathers what the machines
+  # inside leave over under its name: the cold raw milk from Cooling, the manure above the
+  # limit, and the methane and runoff. Inputs that nothing inside makes come in.
+  # The farm names feed as its own input: it buys feed, and it grows grass feed on its fields.
+  # The two compete, and both go to the herd and the young stock.
+  # The farm buys cows and bulls too. They go into the herd, next to its own young stock.
+  # The trade in cattle between farms is not part of this model: the cattle come from
+  # somewhere, and the cattle that the farm sells go to somewhere.
+  # The farm names calves, and cows and bulls, as its own outputs: it sells some of them,
+  # and keeps the rest for its herd. So they flow both inside and out. The culled cows and
+  # bulls of the herd leave as cows and bulls too.
+  # Beef is not an output of the farm. It comes from the butcher.
+
+system Herd
+  in: water, genetics, vet and contractors, cows and bulls, feed
+  out: + raw milk
+         treatment: raw
+         temperature: warm
+       + calves
+       culled cows and bulls
+       ~ manure
+       ~ methane
+  # The farmer improves the genetics of the herd by breeding: the calves of the best cows
+  # grow up to replace the others. Culling starts early, more and more on genomics: calves
+  # that the farm does not keep leave before rearing. A cow with persistent problems at
+  # milking leaves the herd later.
+
+system Rearing
+  in: calves
+  out: + cows and bulls
+  # Opfok: the farm raises its calves into cows and bulls, for its own herd or for sale.
+
+system Cooling
+  in: raw milk
+  out: + raw milk
+         temperature: cold
+  why: Raw milk lasts 7 to 10 days when it is cold, and about 2 hours when it is warm.
+
+system Fields
+  in: manure
+      amount: within Deposition limit
+  out: + grass feed
+       ~ runoff
+
+rule Deposition limit
+  limits: manure into Fields
+  why: It reduces the runoff into the groundwater. The manure above the limit leaves the farm.
+
+rule Milk quota
+  limits: raw milk out of Dairy farm
+  why: From 1984 to 2015 the EU capped how much milk each farm could deliver.
+
+# ------------------------------------------------------------ the dairy plant
+
+system Dairy plant
+  how: a cooperative plant collects the milk of many farms, mixes, pasteurizes and packs it, and brings it to the shops
+  why: The market deals with a few plants instead of every farm. A plant closes that gap for many farms and many markets at once, so it pays for itself.
+  contains: Mixing, Pasteurizing, Packing
+  in: raw milk from many Dairy farm
+      treatment: raw
+      temperature: cold
+  out: + packaged milk
+       ?
+  # The plant gives out the packaged milk that Packing makes.
+  # The plant does not accept milk that a farm pasteurized itself: it controls quality from the raw milk on.
+  # Pasteurized milk from a Farm shop would be refused here: "pasteurized" is not listed.
+  # "from many": the input adds up the outputs of many suppliers. Bulk is not a quality of one
+  # farm's milk; it comes from the sum. Draft syntax. A minimum, as in Ontology55's
+  # "requires: k", could follow: "from at least 50 Dairy farm".
+
+system Mixing
+  in: raw milk
+  out: + raw milk
+         consistency: consistent
+         volume: bulk
+
+system Pasteurizing
+  in: raw milk
+  out: + milk
+         treatment: pasteurized
+
+system Packing
+  in: milk, packaging from somewhere
+  out: + packaged milk
+
+# ------------------------------------------------------------ outside: boundaries only
+
+outside Climate
+  in: methane
+      amount: low
+  out: ~ global warming
+  # Methane comes from Cow and bucket and from Herd. The engine routes each output
+  # to the receiver that names it; an output with no receiver is fog.
+  # The outputs do not name an amount yet, so the engine cannot find this gap. ? Add amount to methane.
+
+outside Groundwater
+  in: runoff
+      amount: low
+  # Nothing comes out until someone needs the groundwater.

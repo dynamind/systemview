@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { pathD, type Rect } from '../scene/geometry'
+import { pathD, STACKED, type Rect } from '../scene/geometry'
 import type { Scene } from '../scene/useScene'
 import FlowLayer from './FlowLayer.vue'
 import { EDGES, FONT, NODES, residueOf, textWidth, type NodeDef } from '../scene/world'
@@ -236,6 +236,22 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
         </text>
       </g>
 
+      <!-- The inside of an open frame lies under the edges, so the flows inside it show. -->
+      <g class="insets">
+        <rect
+          v-for="n in frame.others.filter((n) => n.f > 0)"
+          :key="n.id"
+          :x="-n.w / 2"
+          :y="-n.h / 2"
+          :width="n.w"
+          :height="n.h"
+          rx="8"
+          class="inset"
+          :opacity="nodeOpacity(n) * n.f"
+          :transform="`translate(${n.x} ${n.y}) scale(${n.s})`"
+        />
+      </g>
+
       <!-- Edges -->
       <g class="edges">
         <path
@@ -256,17 +272,18 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
         :key="n.id"
         :data-node="clickable(n.id) ? n.id : undefined"
         class="node"
-        :class="[n.def.kind, n.def.valence, { clickable: clickable(n.id), ghost: n.g > 0.5 }]"
+        :class="[n.def.kind, n.def.valence, { clickable: clickable(n.id), ghost: n.g > 0.5, open: n.f > 0.5 }]"
         :opacity="nodeOpacity(n)"
         :transform="`translate(${n.x} ${n.y}) scale(${n.s})`"
         @pointerenter="clickable(n.id) && hover(n.id)"
         @pointerleave="hover(null)"
       >
         <template v-if="n.def.kind === 'source'">
-          <circle r="2.6" class="dot neutral" />
+          <circle r="2.6" class="dot" :class="n.def.valence ?? 'neutral'" />
           <text x="-10" class="label" :font-size="FONT.label" text-anchor="end" dominant-baseline="central">
             {{ n.def.label }}
           </text>
+          <text v-if="n.def.note" x="-10" y="13" class="note serif" font-size="9.5" text-anchor="end">{{ n.def.note }}</text>
         </template>
 
         <template v-else-if="n.def.kind === 'sink'">
@@ -285,7 +302,7 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
           >
             {{ n.def.label }}
           </text>
-          <text v-if="n.def.note" x="11" y="14" class="note serif" font-size="9.5">{{ n.def.note }}</text>
+          <text v-if="n.def.note" x="11" y="14" class="note serif" :class="n.def.gap && `gap-${n.def.gap}`" font-size="9.5">{{ n.def.note }}</text>
         </template>
 
         <template v-else-if="n.def.kind === 'part'">
@@ -311,6 +328,10 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
         </template>
 
         <template v-else-if="n.def.kind === 'solution'">
+          <template v-if="n.def.many && n.f < 0.5">
+            <rect v-for="k in [2, 1]" :key="k" :x="-n.w / 2 + (STACKED / 2) * k" :y="-n.h / 2 + (STACKED / 2) * k" :width="n.w" :height="n.h" rx="8" class="box solution-box" />
+          </template>
+          <!-- An open solution is a frame: its machines stand inside, and edges show through. -->
           <rect
             :x="-n.w / 2"
             :y="-n.h / 2"
@@ -319,6 +340,7 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
             rx="8"
             class="box solution-box"
             :class="{ 'rule-box': n.def.byRule }"
+            :fill-opacity="1 - n.f"
           />
           <template v-if="n.def.byRule">
             <!-- The bar follows the box's rounded corners instead of poking out past them -->
@@ -329,6 +351,8 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
             {{ caption(n) }}
           </text>
           <text
+            :x="n.f * (-n.w / 2 + 12 + textWidth(n.def.label, FONT.box) / 2)"
+            :y="n.f * (-n.h / 2 + 16)"
             :font-size="FONT.box"
             class="label"
             :class="{ rule: n.def.byRule }"
@@ -347,7 +371,7 @@ const clickable = (id: string) => NODES[id].kind !== 'source' || !!NODES[id].par
             y2="0"
             class="strike"
           />
-          <g v-if="residueOf(n.id, sc.composition().nodes).length" :transform="`translate(0 ${n.h / 2 + 11})`">
+          <g v-if="n.f < 0.5 && residueOf(n.id, sc.composition().nodes).length" :transform="`translate(0 ${n.h / 2 + 11 + (n.def.many ? STACKED : 0)})`">
             <text x="-6" font-size="6.5" class="caps muted" text-anchor="end" dominant-baseline="central">residue</text>
             <g v-for="(r, i) in residueOf(n.id, sc.composition().nodes)" :key="i" :transform="`translate(${4 + i * 11} 0)`">
               <circle v-if="r.kind === 'diffuse'" r="5.5" class="ring undesired" />
@@ -428,6 +452,12 @@ text {
 .note {
   fill: var(--muted);
 }
+.note.gap-pain {
+  fill: var(--pain);
+}
+.note.gap-refused {
+  fill: var(--undesired);
+}
 .label {
   font-weight: 450;
 }
@@ -457,8 +487,14 @@ text {
 .node.system.open .box {
   fill: var(--paper-inset);
 }
-.node.clickable:hover .box {
+.node.clickable:not(.open):hover .box {
   fill: var(--paper-hover);
+}
+.node.open {
+  cursor: inherit;
+}
+.inset {
+  fill: var(--paper-inset);
 }
 .hit {
   fill: transparent;
@@ -470,7 +506,8 @@ text {
 .rule-box {
   stroke: var(--rule);
   stroke-width: calc(var(--px) * 1.2);
-  fill: var(--rule-tint);
+  /* Opaque, so the flows behind a rule don't show through it. */
+  fill: color-mix(in srgb, var(--rule) 6%, var(--paper));
 }
 .rule-bar {
   fill: var(--rule);

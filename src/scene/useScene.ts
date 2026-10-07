@@ -176,7 +176,7 @@ export function useScene() {
   function rebuildGeometry() {
     const rects = geometry.rects
     rects.clear()
-    for (const [id, a] of nodeAnims) rects.set(id, { x: a.get('x'), y: a.get('y'), w: a.get('w'), h: a.get('h'), s: a.get('s') })
+    for (const [id, a] of nodeAnims) rects.set(id, { x: a.get('x'), y: a.get('y'), w: a.get('w'), h: a.get('h'), s: a.get('s'), f: a.get('f') })
     geometry.curves = layoutEdges(
       EDGES.filter((e) => edgeAnims.has(e.id)),
       (id) => rects.get(id),

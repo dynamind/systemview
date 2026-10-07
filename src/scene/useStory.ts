@@ -82,7 +82,8 @@ export function useStory(scene: Scene) {
   // Empty canvas: inside the system it's the way back out; elsewhere it just lets go of the focus.
   function background() {
     stopTour()
-    if (state.zoom === 'inside') actions.overview()
+    if (script.background) script.background()
+    else if (state.zoom === 'inside') actions.overview()
     else actions.clearFocus()
   }
 

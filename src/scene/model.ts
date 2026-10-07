@@ -41,6 +41,10 @@ export interface NodeDef {
   condenses?: boolean
   /** The caption over a box, in place of what its kind would say. */
   tag?: string
+  /** Output: the worst gap it makes at an input it reaches, which colors its note. */
+  gap?: 'pain' | 'refused'
+  /** Solution: stands for many of its kind, drawn as a stack. */
+  many?: boolean
 
   // Statements only derived worlds read (see derive.ts).
   /** Problem: the rule that makes it one. Solution on a ladder: the rule that made it the sensible answer. */
@@ -80,6 +84,10 @@ export interface EdgeDef {
   viaFrom?: string
   viaTo?: string
   inner?: boolean
+  /** A loop back: the edge runs along a lane at the bottom of this frame, under the machines in it. */
+  under?: string
+  /** The edge runs level from its start and turns only at the end, where it merges with the other flows into its end. */
+  late?: boolean
 }
 
 /** What every world's scene state has; the rest is the world's own. */
@@ -191,8 +199,8 @@ export function finish(out: Composition, s: BaseState, nodes: Record<string, Nod
     }
   }
 
-  // Hover lifts, focus dims everything off the purpose path
-  if (s.hover && out.nodes[s.hover] && nodes[s.hover].kind !== 'system') out.nodes[s.hover].s *= 1.045
+  // Hover lifts, focus dims everything off the purpose path. An open frame stays put: its machines don't lift with it.
+  if (s.hover && out.nodes[s.hover] && nodes[s.hover].kind !== 'system' && out.nodes[s.hover].f < 0.5) out.nodes[s.hover].s *= 1.045
   if (s.focus) {
     const path = new Set(lineage(nodes, s.focus))
     for (const [id, t] of Object.entries(out.nodes)) if (!path.has(id)) t.d = 1
@@ -231,6 +239,8 @@ export interface Script {
     clearFocus(): void
   }
   click(id: string): void
+  /** A click on the empty canvas. Without it, the canvas zooms back out or lets go of the focus. */
+  background?(): void
   /** Lower-cased, trimmed, non-empty. */
   ask(text: string): void
   suggestions(): Suggestion[]

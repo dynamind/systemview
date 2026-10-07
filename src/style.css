@@ -12,6 +12,7 @@
   --hair-strong: rgba(31, 30, 28, 0.16);
   --desired: #2e7c6b;
   --undesired: #cf4f2c;
+  --pain: #c58a1d;
   --unknown: #9a97a3;
   --neutral: #8a857b;
   --rule: #4b56c4;
@@ -33,6 +34,7 @@
     --hair-strong: rgba(236, 235, 230, 0.16);
     --desired: #5fb8a3;
     --undesired: #ee7a55;
+    --pain: #e0b04f;
     --unknown: #8e8b96;
     --neutral: #9d998f;
     --rule: #8b93ff;

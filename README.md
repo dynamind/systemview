@@ -18,6 +18,7 @@ Each world is one system and one story. Select a world with the `world` URL para
 | `?world=buildbuy` | Build or buy | Written by hand |
 | `?world=buildbuy-derived` | Build or buy | Written as statements, laid out by `deriveLadder()` |
 | `?world=milk` | Milk (explore) | Written as an outline in `models/milk.txt`, laid out by `deriveExplore()` |
+| `?world=machines` | Milk machines | Written as function machines in `models/milk-machines.txt`, laid out by `deriveMachines()`, with the gaps on each output |
 
 Other URL parameters:
 
@@ -151,10 +152,13 @@ To make sure the deploy worked, compare the JavaScript file name in the live `in
 | `src/scene/ladder.ts` | Makes a layout and a story from statements about a ladder of needs and a rule |
 | `src/scene/outline.ts` | Reads a model written as an indented outline. The comment at the top gives the format. |
 | `src/scene/explore.ts` | Makes a canvas to explore an outline: no script and no voice, it grows where you click |
-| `models/` | Models written as outlines |
+| `src/scene/machines.ts` | Reads a model of function machines, routes each output to its receivers, and finds the gaps |
+| `src/scene/machineWorld.ts` | `deriveMachines()`: shows a model of function machines as a world. A boundary opens into a frame with its machines inside. Each output shows its gaps: amber for pain points, red for refusals. Outside systems are not shown. |
+| `models/` | Models written as outlines. `milk-machines.txt` is a model of function machines. |
 | `src/components/` | The canvas, the particle layer, and the narration panel |
 | `src/domains/` | One folder for each world. `index.ts` lists the worlds. |
 | `scripts/voice.mjs`, `scripts/voice.py` | The voice script |
 | `scripts/render.mjs` | The video render script |
+| `scripts/gaps.mjs` | Prints the routes and gaps in a model of function machines: `node scripts/gaps.mjs models/milk-machines.txt` |
 | `public/voice/` | The voice clips and their manifest |
 | `renders/` | Video output and voice samples. Git ignores this folder. |
