@@ -74,7 +74,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => off?.())
 
-const nodeOpacity = (n: RNode) => n.o * (1 - 0.8 * n.d) * (n.def.kind === 'solution' || n.def.kind === 'sink' ? 1 - 0.5 * n.g : 1)
+const nodeOpacity = (n: RNode) => n.o * (1 - 0.8 * n.d) * (n.def.kind === 'solution' || n.def.kind === 'sink' || n.def.kind === 'rule' ? 1 - 0.5 * n.g : 1)
 
 // ------------------------------------------------------------ input
 

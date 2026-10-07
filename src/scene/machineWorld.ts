@@ -12,6 +12,8 @@ import { LANE, STACKED } from './geometry'
 export interface MachineState extends BaseState {
   /** Boundaries that show their machines. */
   open: string[]
+  /** The way to the need that is in front. The other ways stand behind it, ghosted. */
+  choice: string | null
 }
 
 const ROW = 40
@@ -203,6 +205,29 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
   const root = need ? idOf.get(need)! : ''
   const instanceOf = new Map([...idOf].map(([u, id]) => [id, u]))
   const boundaries = instances.filter((u) => u.kids.length).map((u) => idOf.get(u)!)
+  // Systems that give the same input of the need compete for it: one is in front, and the others are alternatives.
+  const rivals = need ? [...new Set(insOf(need).flatMap((i) => routes.filter((r) => r.to === need && r.input === i && !r.from.up).map((r) => r.from)))] : []
+  const choices = rivals.length > 1 ? rivals.map((u) => idOf.get(u)!) : []
+  /** The way to the need that each system gives to, if it gives to one way only. */
+  const wayOf = new Map<Instance, string>()
+  for (const u of rivals) wayOf.set(u, idOf.get(u)!)
+  for (let grew = true; grew; ) {
+    grew = false
+    for (const u of roots) {
+      const ways = new Set(rootReceivers(u).map((v) => wayOf.get(v)))
+      const way = [...ways][0]
+      if (wayOf.has(u) || ways.size !== 1 || !way) continue
+      wayOf.set(u, way)
+      grew = true
+    }
+  }
+  /** The top-level system that u stands in. */
+  const topOf = (u: Instance): Instance => (u.up ? topOf(u.up) : u)
+  /** The way that a node serves: its own system's way, or the way of the system it is a flow or a part of. */
+  const wayAt = (id: string) => {
+    const at = lineage(N, id).find((x) => instanceOf.has(x))
+    return at ? wayOf.get(topOf(instanceOf.get(at)!)) : undefined
+  }
 
   // ------------------------------------------------------------ the layout
 
@@ -476,6 +501,8 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
         c.nodes[k].y = y
       }
     }
+    // The ways that are not in front, and what serves only them, stand behind, ghosted.
+    if (s.choice) for (const [k, t] of Object.entries(c.nodes)) if ((wayAt(k) ?? s.choice) !== s.choice) t.g = 1
     finish(c, s, N, edges)
     // A joined flow belongs to the machine it goes in to as much as to the one that makes it: both stay lit.
     for (const r of joined) {
@@ -577,10 +604,24 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
       clearFocus() {
         state.focus = null
       },
+      swap(id: string) {
+        state.choice = id
+        state.focus = null
+        settle('all', 40)
+        const u = instanceOf.get(id)!
+        speak([told(id), ...routes.filter((r) => r.from === u && r.to === need).map((r) => verdict(need!.machine.label, gapsOf(r)))].filter(Boolean).join(' '))
+      },
+    }
+    /** The way that a system behind the one in front serves, if a click on it should bring that way forward. */
+    const behind = (id: string) => {
+      const way = wayAt(id)
+      return way && way !== state.choice ? way : undefined
     }
 
     // A click inside an open frame closes the frames within it, and a click outside closes them all.
     function click(id: string) {
+      const way = behind(id)
+      if (way) return actions.swap(way)
       if (boundaries.includes(id) && !state.open.includes(id)) return actions.grow(id)
       if (boundaries.includes(id)) {
         const within = state.open.filter((b) => b !== id && lineage(N, b).includes(id))
@@ -600,9 +641,10 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
 
     function suggestions(): Suggestion[] {
       const s: Suggestion[] = []
-      for (const id of boundaries) if (!state.open.includes(id) && !instanceOf.get(id)!.up) s.push({ label: `What is inside ${instanceOf.get(id)!.name}?`, run: () => actions.grow(id) })
+      for (const id of choices) if (id !== state.choice) s.push({ label: `Compare with ${N[id].label}`, run: () => actions.swap(id) })
+      for (const id of boundaries) if (!state.open.includes(id) && !instanceOf.get(id)!.up && !behind(id)) s.push({ label: `What is inside ${instanceOf.get(id)!.name}?`, run: () => actions.grow(id) })
       if (state.open.length < boundaries.length) s.push({ label: 'Show everything', run: actions.open })
-      return s.slice(0, 4)
+      return s.slice(0, 5)
     }
 
     const tour = [
@@ -611,7 +653,11 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
         settle('all', 60)
         speak(intro)
       },
-      ...boundaries.filter((id) => !instanceOf.get(id)!.up).map((id) => () => actions.grow(id)),
+      // Each way comes forward in turn, and its boundaries open.
+      ...(choices.length ? choices : [null]).flatMap((way, j) => [
+        ...(j ? [() => actions.swap(way!)] : []),
+        ...boundaries.filter((id) => !instanceOf.get(id)!.up && (!way || (wayOf.get(instanceOf.get(id)!) ?? way) === way)).map((id) => () => actions.grow(id)),
+      ]),
       actions.overview,
     ]
     function background() {
@@ -624,7 +670,7 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
     return { intro, actions, click, background, ask, suggestions, tour }
   }
 
-  const initialState = (): MachineState => ({ zoom: 'root', focus: null, hover: null, open: [] })
+  const initialState = (): MachineState => ({ zoom: 'root', focus: null, hover: null, open: [], choice: choices[0] ?? null })
 
   return { id: m.id, title: m.title, goal: '', system: root, NODES: N, EDGES: edges, initialState, compose, script, visiblePath: true, maxZoom: 1.5 }
 }
