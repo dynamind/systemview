@@ -180,6 +180,7 @@ export function useScene() {
     geometry.curves = layoutEdges(
       EDGES.filter((e) => edgeAnims.has(e.id)),
       (id) => rects.get(id),
+      (id) => nodeAnims.get(id)?.goal('x'),
     )
     for (const [id, c] of Object.entries(geometry.curves)) geometry.lengths[id] = curveLength(c)
   }

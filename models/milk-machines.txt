@@ -99,10 +99,10 @@ system Dairy farm
   how: a farm milks its herd for the dairy, not for its own customers
   why: Selling to a dairy is a different business from selling at the door.
   contains: Herd, Rearing, Cooling, Fields
-  in: water, genetics, vet and contractors, cows and bulls from somewhere, feed
+  in: water, genetics, vet and contractors, feed, cows and bulls from somewhere
   out: + raw milk
-       + calves
-       + cows and bulls to somewhere
+       ~ culled calves to somewhere
+       ~ culled cows and bulls to somewhere
        ~ manure
        ~ runoff
        ~ methane
@@ -124,8 +124,9 @@ system Herd
   out: + raw milk
          treatment: raw
          temperature: warm
+       ~ culled calves
+       ~ culled cows and bulls
        + calves
-       culled cows and bulls
        ~ manure
        ~ methane
   # The farmer improves the genetics of the herd by breeding: the calves of the best cows
@@ -135,7 +136,8 @@ system Herd
 
 system Rearing
   in: calves
-  out: + cows and bulls
+  out: culled cows and bulls
+       + cows and bulls
   # Opfok: the farm raises its calves into cows and bulls, for its own herd or for sale.
 
 system Cooling

@@ -235,14 +235,24 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
       routes.some((r) => r.from === u && r.output === o) && edges.some((e) => e.id.startsWith('x-') && e.from === outId(u, o))
     const lane = (u: Instance, o: Out) =>
       forked(u, o) ? ROW + Math.max(0, ...routes.filter((r) => r.from === u && r.output === o).map((r) => ruleRoom(r.to))) : 0
+    /** How far each machine in a frame stands from the right, in columns. group() sets it. */
+    const column = new Map<Instance, number>()
     /** The rows of the outputs of u, down from the center of its box. */
     const rowsOf = (u: Instance) => {
-      const o = outsOf(u)
-      let y = 0
-      const ys = o.map((x) => {
-        const at = y
-        y += ROW + lane(u, x)
-        return at
+      // Each output takes a band: its line, and the box it goes in to, which stands level with it or a lane below it.
+      // Only in a frame, and only a box in a column right of u is in the way.
+      const bands = outsOf(u).map((x) => {
+        const to = routes.filter((r) => r.from === u && r.output === x).map((r) => r.to)
+        if (!u.up || to.length !== 1 || !((column.get(to[0]) ?? Infinity) < (column.get(u) ?? -Infinity))) return { top: 0, bottom: 0, box: false }
+        const h = sizeOf(N[idOf.get(to[0])!]).h
+        const d = lane(u, x)
+        return { top: Math.min(0, d - h / 2 - ruleRoom(to[0])), bottom: d + h / 2, box: true }
+      })
+      // The bands stand apart: a row between two lines, half a row between a line and a box, a row between two boxes.
+      const ys: number[] = []
+      bands.forEach((b, j) => {
+        const p = bands[j - 1]
+        ys.push(!j ? 0 : ys[j - 1] + Math.max(ROW, p.bottom - b.top + (p.box && b.box ? ROW : ROW / 2)))
       })
       return ys.map((v) => v - (ys[0] + ys[ys.length - 1]) / 2)
     }
@@ -326,7 +336,7 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
         depth.set(u, v)
         return v
       }
-      members.forEach((u) => depthOf(u))
+      members.forEach((u) => column.set(u, depthOf(u)))
       const deepest = Math.max(...members.map((u) => depth.get(u)!))
       const feeders = (u: Instance) => members.filter((r) => ahead(r).includes(u))
       const columns = Array.from({ length: deepest + 1 }, (_, j) => members.filter((u) => depth.get(u) === deepest - j))
@@ -352,7 +362,7 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
       for (const pass of frame ? [0, 1] : [0]) {
         const before = new Map(center)
         for (let j = columns.length - 1; j >= 0; j--) {
-          // A machine that a forked output feeds stands a row below that output, even in a loop.
+          // A machine that a forked output feeds stands a row below that output.
           const fed = (u: Instance) => (frame ? feeders(u).filter((r) => center.has(r) && forked(r, routes.find((x) => x.from === r && x.to === u)!.output)) : [])
           const want = (u: Instance) => {
             const lane = fed(u)
@@ -364,7 +374,9 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
             const from = pass && !ahead(u).length ? feeders(u).filter((r) => before.has(r)) : []
             return from.length ? mean(from.map((r) => before.get(r)! + row(r, u))) : undefined
           }
-          const order = [...columns[j]].sort((a, b) => Number(loops.has(a) && !fed(a).length) - Number(loops.has(b) && !fed(b).length) || (want(a) ?? 1e9) - (want(b) ?? 1e9))
+          // At the top level, loops stand below the main flow. In a frame, each machine stands in the order of the rows it is level with.
+          const late = (u: Instance) => Number(!frame && loops.has(u))
+          const order = [...columns[j]].sort((a, b) => late(a) - late(b) || (want(a) ?? 1e9) - (want(b) ?? 1e9))
           // Each one stands at the height it wants, but never closer than STACK to the one above it. In a frame,
           // the boxes stand a row apart, so that a flow can pass between them.
           const gap = frame ? ROW - 28 : STACK
@@ -453,6 +465,18 @@ export function deriveMachines(m: { id: string; title: string; text: string }): 
         // A flow that would stand less than two rows below the one above it takes the next row, so the rows stay even.
         want.forEach((w, j) => ys.push(!j ? w : w < ys[j - 1] + 2 * gap ? ys[j - 1] + gap : w))
         order.forEach((k, j) => (c.nodes[k].y = ys[j]))
+      }
+    }
+    // An output that only leaves its frame drops to the row it leaves at, if that is lower, so that it runs level.
+    // The outputs under it move down with it.
+    for (const u of instances) {
+      if (!c.nodes[idOf.get(u)!] || !open.has(N[idOf.get(u)!].parent!)) continue
+      let y = -Infinity
+      for (const k of outs(u).filter((k) => c.nodes[k])) {
+        const from = edges.filter((e) => e.from === k)
+        const to = from.length && from.every((e) => e.id.startsWith('x-')) ? c.nodes[from[0].to]?.y : undefined
+        y = Math.max(c.nodes[k].y, to ?? -Infinity, y + ROW)
+        c.nodes[k].y = y
       }
     }
     finish(c, s, N, edges)

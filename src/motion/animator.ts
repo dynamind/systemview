@@ -30,6 +30,11 @@ export class Spring {
     }
   }
 
+  /** Where the spring comes to rest, after a delayed target too. */
+  get goal() {
+    return this.pending?.target ?? this.target
+  }
+
   jump(v: number) {
     this.value = this.target = v
     this.velocity = 0
@@ -66,6 +71,10 @@ export class Animated<K extends string> {
 
   get(k: K) {
     return this.springs[k].value
+  }
+
+  goal(k: K) {
+    return this.springs[k].goal
   }
 
   set(targets: Partial<Record<K, number>>, now: number, delay = 0) {

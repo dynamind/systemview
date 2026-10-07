@@ -71,7 +71,11 @@ const tangent: Record<Side, Pt> = {
   bottom: { x: 0, y: 1 },
 }
 
-export function layoutEdges(edges: EdgeDef[], rect: (id: string) => Rect | undefined): Record<string, Curve> {
+export function layoutEdges(
+  edges: EdgeDef[],
+  rect: (id: string) => Rect | undefined,
+  goalX: (id: string) => number | undefined = (id) => rect(id)?.x,
+): Record<string, Curve> {
   // Group box-attached ends by (node, side).
   type End = { edge: EdgeDef; end: 'from' | 'to'; other: Pt }
   const groups = new Map<string, End[]>()
@@ -110,8 +114,9 @@ export function layoutEdges(edges: EdgeDef[], rect: (id: string) => Rect | undef
   }
 
   // Loops back in one frame take a lane each: the widest runs lowest and turns widest, so loops nest.
+  // The width is where the ends come to rest, so loops do not swap lanes while the boxes move.
   const lanes = new Map<string, { lane: number; of: number }>()
-  const span = (e: EdgeDef) => (rect(e.from)?.x ?? 0) - (rect(e.to)?.x ?? 0)
+  const span = (e: EdgeDef) => (goalX(e.from) ?? 0) - (goalX(e.to) ?? 0)
   for (const frame of new Set(edges.filter((e) => e.under).map((e) => e.under!)))
     edges
       .filter((e) => e.under === frame)
@@ -153,7 +158,7 @@ export function layoutEdges(edges: EdgeDef[], rect: (id: string) => Rect | undef
     // A long edge that merges late runs level and turns in a short stretch before its end.
     const dx = p1.x - p0.x
     const turn = Math.min(dx / 2, Math.max(60, Math.abs(p1.y - p0.y) * 3))
-    if (e.late && dx > 0 && turn < dx / 2) {
+    if (e.late && dx > 0) {
       const m = { x: p1.x - turn, y: p0.y }
       out[e.id] = withLengths([
         { p0, c0: p0, c1: m, p1: m },
